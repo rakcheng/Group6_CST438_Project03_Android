@@ -1,4 +1,4 @@
-# Group6_CST438_Project03_Web
+# Group6_CST438_Project03_Android
 ## Team Members
 
 1. Alfredo Hernandez
