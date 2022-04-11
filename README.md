@@ -24,7 +24,8 @@ This is a web based "story time" application using modern web frameworks. This w
 
 ## App Workflow (Under Construction)
 1. Landing Screen w/ OAuth 2.0 Login screen
-2. Profile Settings (delete my account)
-3. Stories Page (Create/View/Edit/Delete)
-4. Individual Story Page (View previous posts on the story, add/edit/delete a post to the existing story)
+2. Home Page (View Options for profile settings, stories page, individual stories page)
+3. Profile Settings (delete my account)
+4. Stories Page (Create/View/Edit/Delete)
+5. Individual Story Page (View previous posts on the story, add/edit/delete a post to the existing story)
 
