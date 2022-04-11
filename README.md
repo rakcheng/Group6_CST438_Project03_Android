@@ -21,6 +21,36 @@ This is a web based "story time" application using modern web frameworks. This w
 
 ## Entity Relationship Diagram(s)
 ![image](https://user-images.githubusercontent.com/10646650/162261351-ffe7e6cf-ac44-474d-812a-5f8ad5578b7c.png)
+## API Endpoints
+List all Items
+- GET [URL]/items
+
+**Show a specific list/story**
+- GET [URL]/items?list={list name || list ID}
+
+**Add a new post to a story**
+- POST [URL]/items?item_name={item name}&url={url}
+
+**Delete a story post**
+- DELETE [URL]/items?item_name={item id}
+
+**Create new User Account**
+- POST:[url]/newuser?username={username}&password={password}
+
+**Update Story Item**
+- PATCH [URL]/items?item_name={item id}
+
+**Delete Account (Must ask for Confirmation)**
+- DELETE: [URL]/users?username={username}
+
+**Show a Specific Story**
+- GET [URL]/items?list={list name || list ID}
+
+**Logout of Account**
+- POST/GET [url]/logout?username={username}
+
+**Login to Account**
+- POST:[url]/login?username={username}&password={password}
 
 ## App Workflow (Under Construction)
 1. Landing Screen w/ OAuth 2.0 Login screen
