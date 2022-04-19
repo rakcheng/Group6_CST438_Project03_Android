@@ -13,6 +13,7 @@ This is a web based "story time" application using modern web frameworks. This w
 
 
 ## Resources 
+- [Retrofit2 API Tutorial (GET)](https://devtut.github.io/android/retrofit2.html#a-simple-get-request)
 - [Using OAuth 2.0 to Access Google APIs ](https://developers.google.com/identity/protocols/oauth2)
 - [Spring Boot CRUD operations](https://www.geeksforgeeks.org/spring-boot-crud-operations-using-mysql-database/)
 - [How to interact with REST APIs from JavaScript](https://blog.teclado.com/how-to-interact-with-rest-apis-from-javascript/)
