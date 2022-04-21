@@ -231,4 +231,63 @@ public class AppRepository {
         });
     }
 
+    public void getStoryById(int storyId) {
+        retrofitClient.apiInterface.getStoryById(storyId).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                System.out.println("Story retrieved by story id successfully");
+                if(response.isSuccessful()) {
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getStoryByUserId(int userId) {
+        retrofitClient.apiInterface.getStoryByUserId(userId).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                System.out.println("Story retrieved by user id successfully");
+                if(response.isSuccessful()) {
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getStoryByName(String storyName) {
+        retrofitClient.apiInterface.getStoryByName(storyName).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                System.out.println("Story retrieved by name successfully");
+                if(response.isSuccessful()) {
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public LiveData<StoryResponse> getStoryResponseLiveData() { return retrofitClient.storyResponseMutableLiveData;}
+
 }
