@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">project3_cst438</string>
+    <string name="password">Password</string>
+    <string name="create">Create</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="username">Username</string>
+    <string name="story_name">Story Name</string>
+    <string name="submit">Submit</string>
+    <string name="create_a_story">Create a Story</string>
+    <string name="create_new_story">Create new story</string>
+</resources>
