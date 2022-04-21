@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
-import com.groupsix.project3_cst438.retrofit.UserResponse;
+import com.groupsix.project3_cst438.retrofit.StoryResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.StoriesDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.StoryDAO;
@@ -212,20 +212,20 @@ public class AppRepository {
 
     //================================ REST API Operations =========================================
 
-    public void insertUser(User user) {
-        retrofitClient.apiInterface.insertUser(user.getUsername(), user.getPassword()).enqueue(new Callback<UserResponse>() {
+    public void insertStory(Story story) {
+        retrofitClient.apiInterface.insertStory(story.getUserId(), story.getStoryName(), story.getStoryList()).enqueue(new Callback<StoryResponse>() {
             @Override
-            public void onResponse(@NonNull Call<UserResponse> call, @NonNull Response<UserResponse> response) {
-                System.out.println("User created successfully");
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                System.out.println("Story created successfully");
                 if(response.isSuccessful()) {
-                    retrofitClient.userResponseMutableLiveData.postValue(response.body());
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
                 System.out.println("Failed");
-                retrofitClient.userResponseMutableLiveData.postValue(null);
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
