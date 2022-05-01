@@ -14,13 +14,11 @@ import java.util.List;
 
 public class StoryViewModel extends AndroidViewModel {
     private AppRepository mRepository;
-    private LiveData<List<Story>> mStory;
     private LiveData<StoryResponse> storyResponseLiveData;
 
     public StoryViewModel(@NonNull Application application) {
         super(application);
         mRepository = AppRepository.getRepoInstance(application.getApplicationContext());
-        mStory = mRepository.getAllStory();
     }
 
     public void insertLocal(Story story) { mRepository.insertLocalStory(story);}
