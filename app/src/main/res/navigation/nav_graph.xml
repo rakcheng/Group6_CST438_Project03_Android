@@ -9,21 +9,31 @@
         android:id="@+id/home_fragment"
         android:name="com.groupsix.project3_cst438.fragments.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+    </fragment>
 
     <fragment
         android:id="@+id/createStoryFragment"
         android:name="com.groupsix.project3_cst438.fragments.CreateStoryFragment"
         android:label="Create a Story"
-        tools:layout="@layout/fragment_create_story" />
+        tools:layout="@layout/fragment_create_story">
+        <action
+            android:id="@+id/action_createStoryFragment_to_viewStoriesFragment"
+            app:destination="@+id/viewStoriesFragment"/>
+    </fragment>
+
     <fragment
         android:id="@+id/viewStoriesFragment"
         android:name="com.groupsix.project3_cst438.fragments.ViewStoriesFragment"
         android:label="Viewing Stories"
-        tools:layout="@layout/fragment_view_stories" />
+        tools:layout="@layout/fragment_view_stories">
+    </fragment>
+
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.groupsix.project3_cst438.fragments.UserProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_user_profile" />
+        tools:layout="@layout/fragment_user_profile">
+    </fragment>
 </navigation>

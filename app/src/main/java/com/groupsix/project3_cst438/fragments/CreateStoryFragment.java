@@ -4,21 +4,16 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.groupsix.project3_cst438.MainActivity;
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentCreateStoryBinding;
-import com.groupsix.project3_cst438.databinding.FragmentHomeBinding;
-import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
 import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
@@ -53,6 +48,7 @@ public class CreateStoryFragment extends Fragment {
         binding = FragmentCreateStoryBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+
         binding.createStoryBtn.setOnClickListener(view1 -> {
             if (getInputFields()) {
                 // TODO: Replace with shared preferences user Id
@@ -78,8 +74,12 @@ public class CreateStoryFragment extends Fragment {
 
                 binding.initialStoryEditText.setText("");
                 binding.storyNameEditText.setText("");
+
                 // TODO: Make and redirect to new fragment containing the story and its list of stories.
                 //       You can add more stories to it from there or mark it as completed.
+                NavHostFragment.findNavController(CreateStoryFragment.this)
+                        .navigate(R.id.action_createStoryFragment_to_viewStoriesFragment);
+                // (The above action can be found inside nav_graph.xml under CreateStory Fragment)
             });
         });
         return view;
