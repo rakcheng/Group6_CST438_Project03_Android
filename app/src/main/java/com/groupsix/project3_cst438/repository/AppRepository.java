@@ -4,9 +4,12 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
+import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
+import com.groupsix.project3_cst438.retrofit.UserResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.StoriesDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.StoryDAO;
@@ -35,10 +38,6 @@ public class AppRepository {
     private StoryDAO mStoryDao;
     private StoriesDAO mStoriesDao;
 
-    public LiveData<List<User>> mUsersLiveData;
-    public LiveData<List<Story>> mStoryLiveData;
-    public LiveData<List<Stories>> mStoriesLiveData;
-
     // Retrofit client instance
     public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of host for android emulator
     RetrofitClient retrofitClient = new RetrofitClient(BASE_URL);
@@ -59,9 +58,9 @@ public class AppRepository {
 
     //================================ Room Database Operations ====================================
 
-    public LiveData<List<User>> getAllUsers() { return mUserDao.getAllUsers(); }
+    /*public LiveData<List<User>> getAllUsers() { return mUserDao.getAllUsers(); }
     public LiveData<List<Story>> getAllStory() { return mStoryDao.getAll(); }
-    public LiveData<List<Stories>> getAllStories() { return mStoriesDao.getAll(); }
+    public LiveData<List<Stories>> getAllStories() { return mStoriesDao.getAll(); }*/
 
     public void insertLocalUser(User user) {
         AppDatabase.databaseWriteExecutor.execute(() ->{
@@ -216,8 +215,8 @@ public class AppRepository {
         retrofitClient.apiInterface.insertStory(story.getUserId(), story.getStoryName(), story.getStoryList()).enqueue(new Callback<StoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
-                System.out.println("Story created successfully");
                 if(response.isSuccessful()) {
+                    System.out.println("Story created successfully");
                     retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }
@@ -235,8 +234,8 @@ public class AppRepository {
         retrofitClient.apiInterface.getStoryById(storyId).enqueue(new Callback<StoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
-                System.out.println("Story retrieved by story id successfully");
                 if(response.isSuccessful()) {
+                    System.out.println("Story retrieved by story id successfully");
                     retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }
@@ -250,20 +249,20 @@ public class AppRepository {
         });
     }
 
-    public void getStoryByUserId(int userId) {
-        retrofitClient.apiInterface.getStoryByUserId(userId).enqueue(new Callback<StoryResponse>() {
+    public void getAllStoryByUserId(int userId) {
+        retrofitClient.apiInterface.getAllStoryByUserId(userId).enqueue(new Callback<List<StoryResponse>>() {
             @Override
-            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
-                System.out.println("Story retrieved by user id successfully");
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
                 if(response.isSuccessful()) {
-                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                    System.out.println("All story retrieved by user id successfully");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body()); // May need to change this
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
                 System.out.println("Failed");
-                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                retrofitClient.storyListResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -273,8 +272,8 @@ public class AppRepository {
         retrofitClient.apiInterface.getStoryByName(storyName).enqueue(new Callback<StoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
-                System.out.println("Story retrieved by name successfully");
                 if(response.isSuccessful()) {
+                    System.out.println("Story retrieved by name successfully");
                     retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }
@@ -288,6 +287,46 @@ public class AppRepository {
         });
     }
 
-    public LiveData<StoryResponse> getStoryResponseLiveData() { return retrofitClient.storyResponseMutableLiveData;}
+    public void insertStories(Stories stories) {
+        retrofitClient.apiInterface.insertStories(stories.getUserId(), stories.getStory()).enqueue(new Callback<StoriesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoriesResponse> call, @NonNull Response<StoriesResponse> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Stories created successfully");
+                    retrofitClient.storiesResponseMutableLiveData.postValue(response.body());
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<StoriesResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getStoriesByUserIdAndStory(int userId, String story) {
+        retrofitClient.apiInterface.getStoriesByUserIdAndStory(userId, story).enqueue(new Callback<List<StoriesResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoriesResponse>> call, @NonNull Response<List<StoriesResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Stories retrieved by userId and story successfully");
+                    retrofitClient.storiesListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoriesResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storiesListResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public LiveData<StoryResponse> getStoryResponseLiveData() { return retrofitClient.storyResponseMutableLiveData; }
+    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() { return retrofitClient.storyListResponseMutableLiveData; }
+    public LiveData<StoriesResponse> getStoriesResponseLiveData() { return retrofitClient.storiesResponseMutableLiveData; }
+    public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return retrofitClient.storiesListResponseMutableLiveData; }
 }

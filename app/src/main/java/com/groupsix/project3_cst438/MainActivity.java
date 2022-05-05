@@ -1,35 +1,44 @@
 package com.groupsix.project3_cst438;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+/**
+ *  Main (and only activity in project) Used Android Jetpack Navigation Component
+ *  Useful resource : https://developer.android.com/codelabs/android-navigation#0
+ */
 
 public class MainActivity extends AppCompatActivity {
-    private Button goToCreateStory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupDisplay();
-
-        goToCreateStory.setOnClickListener(view -> {
-            Intent intent = CreateStory.intentFactory(getApplicationContext());
-            startActivity(intent);
-        });
-
+        setupNavigationAndFragments(savedInstanceState);
     }
 
-    private void setupDisplay() {
-        goToCreateStory = findViewById(R.id.goCreateStoryBtn);
+    private void setupNavigationAndFragments(Bundle savedInstanceState) {
 
-    }
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
 
-    public static Intent intentFactory(Context context) {
-        return new Intent(context, MainActivity.class);
+        assert navHostFragment != null;
+
+        NavController navController = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        // TODO: Remember to update with all current fragments
+        // This updates the title to current fragment's title
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.home_fragment, R.id.createStoryFragment, R.id.userProfileFragment, R.id.viewStoriesFragment).build();
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }
 }
