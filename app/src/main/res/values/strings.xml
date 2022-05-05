@@ -20,4 +20,10 @@
     <string name="first_sentence">First sentence</string>
     <string name="view_stories">View Stories</string>
     <string name="profile">Profile</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="retype_password">Re-enter Password</string>
+    <string name="create_account">Register</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
 </resources>
