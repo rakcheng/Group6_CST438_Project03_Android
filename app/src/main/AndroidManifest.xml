@@ -13,9 +13,6 @@
         android:theme="@style/Theme.Project3_cst438"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".CreateStory"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

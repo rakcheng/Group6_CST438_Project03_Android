@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
 import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
@@ -18,9 +21,16 @@ import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
 import com.groupsix.project3_cst438.roomDB.entities.User;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,9 +68,9 @@ public class AppRepository {
 
     //================================ Room Database Operations ====================================
 
-    /*public LiveData<List<User>> getAllUsers() { return mUserDao.getAllUsers(); }
-    public LiveData<List<Story>> getAllStory() { return mStoryDao.getAll(); }
-    public LiveData<List<Stories>> getAllStories() { return mStoriesDao.getAll(); }*/
+    public LiveData<List<User>> getAllLocalUsers() { return mUserDao.getAllUsers(); }
+    public LiveData<List<Story>> getAllLocalStory() { return mStoryDao.getAll(); }
+    public LiveData<List<Stories>> getAllLocalStories() { return mStoriesDao.getAll(); }
 
     public void insertLocalUser(User user) {
         AppDatabase.databaseWriteExecutor.execute(() ->{
@@ -212,11 +222,35 @@ public class AppRepository {
     //================================ REST API Operations =========================================
 
     public void insertStory(Story story) {
-        retrofitClient.apiInterface.insertStory(story.getUserId(), story.getStoryName(), story.getStoryList()).enqueue(new Callback<StoryResponse>() {
+        // List of stories body
+        Gson gson = new Gson();
+        String strList = gson.toJson(story.getStoryList());
+        RequestBody body = RequestBody.create(strList, MediaType.parse("application/json"));
+
+        retrofitClient.apiInterface.insertStory(story.getUserId(), story.getStoryName(), body).enqueue(new Callback<StoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story created successfully");
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void finishStory(Story story) {
+        retrofitClient.apiInterface.updateStoryIsOpen(story.getStoryId(), story.getOpen()).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story closed successfully");
                     retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }

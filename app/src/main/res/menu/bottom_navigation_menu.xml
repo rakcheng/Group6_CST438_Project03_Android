@@ -27,5 +27,4 @@
         android:icon="@drawable/ic_baseline_person_24"
         android:title="@string/profile"/>
 
-<!-- TODO: Add 2 more items for view list of stories and profile-->
 </menu>

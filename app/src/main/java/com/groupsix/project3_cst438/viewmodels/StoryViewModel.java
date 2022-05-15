@@ -14,7 +14,6 @@ import java.util.List;
 
 public class StoryViewModel extends AndroidViewModel {
     private AppRepository mRepository;
-    private LiveData<StoryResponse> storyResponseLiveData;
 
     public StoryViewModel(@NonNull Application application) {
         super(application);
@@ -26,6 +25,7 @@ public class StoryViewModel extends AndroidViewModel {
 
     public void updateLocal(Story story) { mRepository.updateLocalStory(story);}
     // TODO: Update Existing story from backend
+    public void finishStoryExternal(Story story) { mRepository.finishStory(story); }
 
     public void deleteLocal(Story story) { mRepository.deleteLocalStory(story);}
 
