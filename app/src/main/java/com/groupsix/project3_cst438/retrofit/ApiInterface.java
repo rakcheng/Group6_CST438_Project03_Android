@@ -33,6 +33,15 @@ public interface ApiInterface {
     @PATCH("api/story/update")
     Call<StoryResponse> updateStoryIsOpen(@Query("storyId") int storyId, @Query("isOpen") boolean isOpen);
 
+    @GET("api/story/all")
+    Call<List<StoryResponse>> getAllStory();
+
+    @GET("api/story/allopen")
+    Call<List<StoryResponse>> getAllOpenStory();
+
+    @GET("api/story/allclosed")
+    Call<List<StoryResponse>> getAllClosedStory();
+
     @GET("api/story")
     Call<StoryResponse> getStoryById (@Query("storyId") int storyId);
 

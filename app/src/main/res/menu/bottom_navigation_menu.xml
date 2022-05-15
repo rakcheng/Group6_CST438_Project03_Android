@@ -16,7 +16,7 @@
         android:title="@string/add_story"/>
 
     <item
-        android:id="@+id/viewStoriesFragment"
+        android:id="@+id/viewAlllStoryFragment"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_menu_book_24"
         android:title="@string/view_stories"/>

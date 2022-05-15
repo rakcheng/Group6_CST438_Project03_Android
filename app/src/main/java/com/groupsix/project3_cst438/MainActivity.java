@@ -11,7 +11,7 @@ import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
- *  Main (and only activity in project) Used Android Jetpack Navigation Component
+ *  Main (and only activity in project) Project uses Android Jetpack Navigation Component
  *  Useful resource : https://developer.android.com/codelabs/android-navigation#0
  */
 
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Remember to update with all current fragments
         // This updates the title to current fragment's title
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.home_fragment, R.id.createStoryFragment, R.id.userProfileFragment, R.id.viewStoriesFragment, R.id.viewSingleStoryFragment).build();
+                R.id.home_fragment, R.id.createStoryFragment, R.id.userProfileFragment, R.id.viewAlllStoryFragment, R.id.viewSingleStoryFragment).build();
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }

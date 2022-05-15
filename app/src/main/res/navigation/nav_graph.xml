@@ -28,10 +28,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/viewStoriesFragment"
-        android:name="com.groupsix.project3_cst438.fragments.ViewStoriesFragment"
+        android:id="@+id/viewAlllStoryFragment"
+        android:name="com.groupsix.project3_cst438.fragments.ViewAllStoryFragment"
         android:label="Viewing Stories"
-        tools:layout="@layout/fragment_view_stories">
+        tools:layout="@layout/fragment_view_all_story">
+        <action
+            android:id="@+id/actionViewAllStoryToViewSingle"
+            app:destination="@id/viewSingleStoryFragment" />
     </fragment>
 
     <fragment

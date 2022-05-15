@@ -33,6 +33,28 @@ public class StoryViewModel extends AndroidViewModel {
     public Story getLocalByUserId(int userId) { return mRepository.getLocalStoryByUserId(userId); }
     public Story getLocalByName(String storyName) { return mRepository.getLocalStoryByName(storyName); }
 
+    public LiveData<List<Story>> getAllLocal() {
+        return mRepository.getAllLocalStoryLiveData();
+    }
+
+
+    // This will trigger livedata to change. Get livedata list
+    public void getAllStory() {
+        mRepository.getAllStory();
+    }
+
+    public void getAllOpenStory() {
+        mRepository.getAllOpenStory();
+    }
+
+    public void getAllClosedStory() {
+        mRepository.getAllClosedStory();
+    }
+
+    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() {
+        return mRepository.getStoryListResponseLiveData();
+    }
+
     public LiveData<StoryResponse> getStoryResponseLiveData() {
         return mRepository.getStoryResponseLiveData();
     }

@@ -69,7 +69,7 @@ public class AppRepository {
     //================================ Room Database Operations ====================================
 
     public LiveData<List<User>> getAllLocalUsers() { return mUserDao.getAllUsers(); }
-    public LiveData<List<Story>> getAllLocalStory() { return mStoryDao.getAll(); }
+    public LiveData<List<Story>> getAllLocalStoryLiveData() { return mStoryDao.getAll(); }
     public LiveData<List<Stories>> getAllLocalStories() { return mStoriesDao.getAll(); }
 
     public void insertLocalUser(User user) {
@@ -257,6 +257,63 @@ public class AppRepository {
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllStory() {
+        retrofitClient.apiInterface.getAllStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllOpenStory() {
+        retrofitClient.apiInterface.getAllOpenStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all open story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllClosedStory() {
+        retrofitClient.apiInterface.getAllClosedStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all closed story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
                 System.out.println("Failed");
                 retrofitClient.storyResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());

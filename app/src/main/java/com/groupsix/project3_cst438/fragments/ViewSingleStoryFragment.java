@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewSingleStoryBinding;
-import com.groupsix.project3_cst438.fragments.adapters.ViewStoryAdapter;
+import com.groupsix.project3_cst438.fragments.recyclerViews.ViewStoryAdapter;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
@@ -54,18 +54,20 @@ public class ViewSingleStoryFragment extends Fragment {
 
         binding.storyNameTextView.setText(mStory.getStoryName());
 
+        // If user clicks back button take them home
         binding.viewStoryBackBtn.setOnClickListener(view1 -> {
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.navigate(R.id.actionSingleStoryToHome);
         });
 
+        // If user clicks finish button mark story as completed
         binding.finishStoryBtn.setOnClickListener(view1 -> {
             mStory.setOpen(false);
             storyViewModel.finishStoryExternal(mStory);
             storyViewModel.updateLocal(mStory);
             Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
 
-            // Now redirect to home and reset fragment
+            // Now pop backstack. Pops current fragment (view single story)
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
         });
