@@ -4,8 +4,10 @@ import androidx.room.TypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.groupsix.project3_cst438.roomDB.entities.Stories;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,13 +21,27 @@ public class CustomTypeConverters {
         }
 
         Type listType = new TypeToken<List<Integer>>() {}.getType();
-        List<Integer> storiesIdList = gson.fromJson(stringId, listType);
-        return storiesIdList;
+        return gson.fromJson(stringId, listType);
     }
 
     @TypeConverter
-    public static String listToString(List<Integer> list) {
+    public static String storiesListToString(List<Integer> list) {
         return gson.toJson(list);
     }
+
+    @TypeConverter
+    public static String stringFromStories(List<Stories> storiesList) {
+        // Serialize stories into json string
+        Gson gson = new Gson();
+        return gson.toJson(storiesList);
+    }
+
+    @TypeConverter
+    public static List<Stories> JsonStoriesListToStories(String jsonStr) {
+        // Deserialize json string to stories object
+        Type listType = new TypeToken<List<Stories>>() {}.getType();
+        return new Gson().fromJson(jsonStr, listType);
+    }
+
 
 }

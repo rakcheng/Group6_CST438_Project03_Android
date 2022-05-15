@@ -19,8 +19,12 @@
         android:label="Create a Story"
         tools:layout="@layout/fragment_create_story">
         <action
-            android:id="@+id/action_createStoryFragment_to_viewStoriesFragment"
-            app:destination="@+id/viewStoriesFragment"/>
+            android:id="@+id/action_createStoryFragment_to_viewSingleStoryFragment"
+            app:destination="@+id/viewSingleStoryFragment"/>
+        <argument
+            android:name="userId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 
     <fragment
@@ -35,5 +39,18 @@
         android:name="com.groupsix.project3_cst438.fragments.UserProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_user_profile">
+    </fragment>
+    <fragment
+        android:id="@+id/viewSingleStoryFragment"
+        android:name="com.groupsix.project3_cst438.fragments.ViewSingleStoryFragment"
+        android:label="Viewing Story"
+        tools:layout="@layout/fragment_view_single_story" >
+        <argument
+            android:name="storyId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/actionSingleStoryToHome"
+            app:destination="@id/home_fragment" />
     </fragment>
 </navigation>

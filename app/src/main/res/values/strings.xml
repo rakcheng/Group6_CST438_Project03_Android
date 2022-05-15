@@ -26,4 +26,8 @@
     <string name="create_account">Register</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="story_goes_here">Story goes here</string>
+    <string name="finish_story">Finish Story</string>
+    <string name="insert_story_name">Insert Story Name</string>
+    <string name="go_back">Go Back</string>
 </resources>

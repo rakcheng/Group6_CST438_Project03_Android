@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Remember to update with all current fragments
         // This updates the title to current fragment's title
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.home_fragment, R.id.createStoryFragment, R.id.userProfileFragment, R.id.viewStoriesFragment).build();
+                R.id.home_fragment, R.id.createStoryFragment, R.id.userProfileFragment, R.id.viewStoriesFragment, R.id.viewSingleStoryFragment).build();
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }

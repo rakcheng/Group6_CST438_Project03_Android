@@ -1,6 +1,9 @@
 plugins {
     id 'com.android.application'
+    id 'androidx.navigation.safeargs'
 }
+
+apply plugin: "androidx.navigation.safeargs"
 
 android {
     compileSdk 32
@@ -64,10 +67,6 @@ dependencies {
     def nav_version = "2.4.2"
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
-
-//    def lifecycle_version = "2.4.1"
-//    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-//    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
 
     // Bottom navigation
     implementation 'com.google.android.material:material:1.5.0'

@@ -2,8 +2,10 @@ package com.groupsix.project3_cst438.roomDB.entities;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 
 import java.util.List;
@@ -13,21 +15,56 @@ import java.util.Objects;
 public class Story {
     @PrimaryKey(autoGenerate = true)
     private Integer storyId;
-
-    // Make it foreign key
     private Integer userId;
-
     private String storyName;
+    private Integer likes;
+    private Integer dislikes;
+    private Boolean isOpen;
 
-    // Changed it to primitive or else type converter wasn't working.
-    // It will store a list of integers (of storiesId per element)
-    private List<Integer> storyList;
+    private List<Stories> storyList;
 
-
-    public Story(Integer userId, String storyName, List<Integer> storyList) {
+    @Ignore
+    public Story(Integer storyId, Integer userId, String storyName, List<Stories> storyList) {
+        this.storyId = storyId;
         this.userId = userId;
         this.storyName = storyName;
         this.storyList = storyList;
+        this.likes = 0;
+        this.dislikes = 0;
+        this.isOpen = true;
+    }
+
+    public Story(Integer userId, String storyName, List<Stories> storyList) {
+        this.userId = userId;
+        this.storyName = storyName;
+        this.storyList = storyList;
+        this.likes = 0;
+        this.dislikes = 0;
+        this.isOpen = true;
+    }
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Integer getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(Integer dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public Boolean getOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(Boolean open) {
+        isOpen = open;
     }
 
     public Integer getStoryId() {
@@ -54,11 +91,11 @@ public class Story {
         this.storyName = storyName;
     }
 
-    public List<Integer> getStoryList() {
+    public List<Stories> getStoryList() {
         return storyList;
     }
 
-    public void setStoryList(List<Integer> storyList) {
+    public void setStoryList(List<Stories> storyList) {
         this.storyList = storyList;
     }
 
@@ -67,11 +104,11 @@ public class Story {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Story story = (Story) o;
-        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(storyList, story.storyList);
+        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(likes, story.likes) && Objects.equals(dislikes, story.dislikes) && Objects.equals(isOpen, story.isOpen) && Objects.equals(storyList, story.storyList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storyId, userId, storyName, storyList);
+        return Objects.hash(storyId, userId, storyName, likes, dislikes, isOpen, storyList);
     }
 }
