@@ -57,7 +57,7 @@ public class ViewSingleStoryFragment extends Fragment {
         // If user clicks back button take them home
         binding.viewStoryBackBtn.setOnClickListener(view1 -> {
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-            controller.navigate(R.id.actionSingleStoryToHome);
+            controller.popBackStack();
         });
 
         // If user clicks finish button mark story as completed
