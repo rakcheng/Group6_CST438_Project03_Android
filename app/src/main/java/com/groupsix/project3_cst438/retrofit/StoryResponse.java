@@ -16,6 +16,15 @@ public class StoryResponse {
     @SerializedName("storyName")
     private String storyName;
 
+    @SerializedName("likes")
+    private Integer likes;
+
+    @SerializedName("dislikes")
+    private Integer dislikes;
+
+    @SerializedName("isOpen")
+    private boolean isOpen;
+
     @SerializedName("storyList")
     private List<Stories> storiesList;
 
@@ -23,8 +32,10 @@ public class StoryResponse {
         return storyId;
     }
 
+    public Integer getUserId() { return userId; }
+
     public Story getStory() {
-        return new Story(storyId, userId, storyName, storiesList);
+        return new Story(storyId, userId, storyName, likes, dislikes, isOpen, storiesList);
     }
 
 }

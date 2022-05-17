@@ -24,14 +24,14 @@ public class Story {
     private List<Stories> storyList;
 
     @Ignore
-    public Story(Integer storyId, Integer userId, String storyName, List<Stories> storyList) {
+    public Story(Integer storyId, Integer userId, String storyName, Integer likes, Integer dislikes, boolean isOpen, List<Stories> storyList) {
         this.storyId = storyId;
         this.userId = userId;
         this.storyName = storyName;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.isOpen = isOpen;
         this.storyList = storyList;
-        this.likes = 0;
-        this.dislikes = 0;
-        this.isOpen = true;
     }
 
     public Story(Integer userId, String storyName, List<Stories> storyList) {

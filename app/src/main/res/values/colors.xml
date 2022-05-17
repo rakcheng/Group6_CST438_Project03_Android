@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="solarized_base1">#eee8d5</color>
+    <color name="solarized_text_base01">#586e75</color>
+    <color name="darcula_background">#282a36</color>
+    <color name="darcula_foreground">#f8f8f2</color>
 </resources>

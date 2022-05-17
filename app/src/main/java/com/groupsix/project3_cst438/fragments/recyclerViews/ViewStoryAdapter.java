@@ -1,4 +1,4 @@
-package com.groupsix.project3_cst438.fragments.adapters;
+package com.groupsix.project3_cst438.fragments.recyclerViews;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,16 +11,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
+
+/**
+ *  An adapter for a recycler view that displays a story and its list of stories
+ */
 
 public class ViewStoryAdapter extends RecyclerView.Adapter<ViewStoryAdapter.ViewHolderClass> {
     Context context;
     List<Stories> mStories;
 
-    public ViewStoryAdapter(Context context, List<Stories> mStories) {
+    public ViewStoryAdapter(Context context, Story story) {
         this.context = context;
-        this.mStories = mStories;
+        this.mStories = story.getStoryList();
     }
 
     @NonNull

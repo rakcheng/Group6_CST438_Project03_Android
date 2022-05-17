@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.Login">
+    tools:context=".fragments.Login"
+    >
 
     <ImageView
         android:id="@+id/imageView"

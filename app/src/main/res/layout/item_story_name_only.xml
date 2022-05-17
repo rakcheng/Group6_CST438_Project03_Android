@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="75dp"
+    >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/story_goes_here"
-        android:id="@+id/storyTextViewRecycler"
+        android:id="@+id/storyNameTextViewRecycler"
         android:textAlignment="center"
-        android:textSize="9pt"/>
+        android:textSize="9pt"
+        />
 
 </LinearLayout>

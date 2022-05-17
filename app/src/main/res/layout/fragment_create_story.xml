@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.CreateStoryFragment"
-    android:id="@+id/fragment_container_view_new_story">
+    android:id="@+id/fragment_container_view_new_story"
+    >
 
 
     <Button

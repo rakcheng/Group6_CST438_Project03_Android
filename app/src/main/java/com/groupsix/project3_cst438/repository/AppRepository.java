@@ -5,20 +5,26 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
 import com.groupsix.project3_cst438.retrofit.StoriesResponse;
+import com.groupsix.project3_cst438.retrofit.StoryLikesResponse;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
 import com.groupsix.project3_cst438.retrofit.UserResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
+import com.groupsix.project3_cst438.roomDB.DAO.CommentDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.StoriesDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.StoryDAO;
+import com.groupsix.project3_cst438.roomDB.DAO.StoryLikesDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.UserDAO;
+import com.groupsix.project3_cst438.roomDB.entities.Comment;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
+import com.groupsix.project3_cst438.roomDB.entities.StoryLikes;
 import com.groupsix.project3_cst438.roomDB.entities.User;
 
 import org.json.JSONObject;
@@ -47,16 +53,27 @@ public class AppRepository {
     private UserDAO mUserDao;
     private StoryDAO mStoryDao;
     private StoriesDAO mStoriesDao;
+    private CommentDAO mCommentDao;
+    private StoryLikesDAO mStoryLikesDao;
 
     // Retrofit client instance
-    public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of host for android emulator
+    // Use this when running using backend app on heroku
+    public static final String BASE_URL = "https://calm-ravine-21524.herokuapp.com/";
+    // Use this when running back end locally
+    //public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of host for android emulator
     RetrofitClient retrofitClient = new RetrofitClient(BASE_URL);
+
+    Observer<List<StoryResponse>> storyObserver;
+    Observer<List<StoryLikesResponse>> storyLikesObserver;
 
     public AppRepository(Context context) {
         mRoomDb = AppDatabase.getInstance(context);
         mUserDao = mRoomDb.getUserDAO();
         mStoryDao = mRoomDb.getStoryDAO();
         mStoriesDao = mRoomDb.getStoriesDAO();
+        mCommentDao = mRoomDb.getCommentsDAO();
+        mStoryLikesDao = mRoomDb.getStoryLikesDAO();
+        updateStoryDB();
     }
 
     public static AppRepository getRepoInstance(Context context) {
@@ -66,11 +83,44 @@ public class AppRepository {
         return repoInstance;
     }
 
+    /**
+     *  Method to fetch data from backend REST API and update ROOM database. Should be used
+     *  in app repository constructor so it's only called when its created.
+     *  TODO: Doesn't fetch data if backend is updated after repository is created
+     */
+    public void updateStoryDB() {
+        // Fetch all story from backend REST API, updates Livedata
+        getAllStory();
+        getAllLikesEntry();
+
+        // Observer to update room db with likes entries from API
+        storyLikesObserver = storyLikesResponses -> {
+            for(StoryLikesResponse storyLikesResponse : storyLikesResponses) {
+                insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
+            }
+            getStoryLikesListResponseLiveData().removeObserver(storyLikesObserver);
+        };
+
+        // Create an observer that when changed inserts story into room database
+        storyObserver = storyResponseList -> {
+            for (StoryResponse storyResponse : storyResponseList) {
+                insertLocalStory(storyResponse.getStory());
+            }
+            getStoryListResponseLiveData().removeObserver(storyObserver);
+        };
+
+        getStoryLikesListResponseLiveData().observeForever(storyLikesObserver);
+        getStoryListResponseLiveData().observeForever(storyObserver);
+        System.out.println("Updated ROOM DB With Data from API");
+    }
+
     //================================ Room Database Operations ====================================
 
     public LiveData<List<User>> getAllLocalUsers() { return mUserDao.getAllUsers(); }
-    public LiveData<List<Story>> getAllLocalStory() { return mStoryDao.getAll(); }
+    public LiveData<List<Story>> getAllLocalStoryLiveData() { return mStoryDao.getAll(); }
     public LiveData<List<Stories>> getAllLocalStories() { return mStoriesDao.getAll(); }
+    public LiveData<List<Comment>> getAllComments() { return mCommentDao.getAllComments(); }
+    public LiveData<List<StoryLikes>> getAllStoryLikes() { return mStoryLikesDao.getAll(); }
 
     public void insertLocalUser(User user) {
         AppDatabase.databaseWriteExecutor.execute(() ->{
@@ -219,6 +269,84 @@ public class AppRepository {
         return stories;
     }
 
+    public void insertLocalComment(Comment comment) {
+        AppDatabase.databaseWriteExecutor.execute(() ->{
+            mCommentDao.insert(comment);
+            mCommentDao = mRoomDb.getCommentsDAO();
+        });
+    }
+
+    public void updateLocalComment(Comment comment) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            mCommentDao.update(comment);
+            mCommentDao = mRoomDb.getCommentsDAO();
+        });
+    }
+
+    public void deleteLocalComment(Comment comment) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            mCommentDao.delete(comment);
+            mCommentDao = mRoomDb.getCommentsDAO();
+        });
+    }
+
+    public Comment getLocalCommentById(int commentId) {
+        Comment comment = null;
+        Future<Comment> commentFuture = AppDatabase.databaseWriteExecutor.submit(() -> mCommentDao.getCommentById(commentId));
+
+        try {
+            comment = commentFuture.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return comment;
+    }
+
+    public Comment getLocalCommentByUserId(int userId) {
+        Comment comment = null;
+        Future<Comment> commentFuture = AppDatabase.databaseWriteExecutor.submit(() -> mCommentDao.getCommentByUserId(userId));
+
+        try {
+            comment = commentFuture.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return comment;
+    }
+
+    public void insertLocalLikesEntry(StoryLikes storyLikes) {
+        AppDatabase.databaseWriteExecutor.execute(() ->{
+            mStoryLikesDao.insert(storyLikes);
+            mStoryLikesDao = mRoomDb.getStoryLikesDAO();
+        });
+    }
+
+    public void updateLocalLikesEntry(StoryLikes storyLikes) {
+        AppDatabase.databaseWriteExecutor.execute(() ->{
+            mStoryLikesDao.update(storyLikes);
+            mStoryLikesDao = mRoomDb.getStoryLikesDAO();
+        });
+    }
+
+    public void deleteLocalLikesEntry(StoryLikes storyLikes) {
+        AppDatabase.databaseWriteExecutor.execute(() ->{
+            mStoryLikesDao.delete(storyLikes);
+            mStoryLikesDao = mRoomDb.getStoryLikesDAO();
+        });
+    }
+
+    public StoryLikes getLocalLikesByStoryIdAndUserId(int storyId, int userId) {
+        StoryLikes storyLikes = null;
+        Future<StoryLikes> storyLikesFuture = AppDatabase.databaseWriteExecutor.submit(() -> mStoryLikesDao.getByStoryIdAndUserId(storyId, userId));
+
+        try {
+            storyLikes = storyLikesFuture.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return storyLikes;
+    }
+
     //================================ REST API Operations =========================================
 
     public void insertStory(Story story) {
@@ -232,6 +360,43 @@ public class AppRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story created successfully");
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void updateStoryLikesCount(Story story) {
+        retrofitClient.apiInterface.updateStoryLikes(story.getStoryId(), story.getLikes()).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story likes updated!");
+                    retrofitClient.storyResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+    public void updateStoryDislikesCount(Story story) {
+        retrofitClient.apiInterface.updateStoryDislikes(story.getStoryId(), story.getDislikes()).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story dislikes updated!");
                     retrofitClient.storyResponseMutableLiveData.postValue(response.body());
                 }
             }
@@ -259,6 +424,63 @@ public class AppRepository {
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
                 System.out.println("Failed");
                 retrofitClient.storyResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllStory() {
+        retrofitClient.apiInterface.getAllStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyListResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllOpenStory() {
+        retrofitClient.apiInterface.getAllOpenStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all open story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyListResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllClosedStory() {
+        retrofitClient.apiInterface.getAllClosedStory().enqueue(new Callback<List<StoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Retrieved all closed story!");
+                    retrofitClient.storyListResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyListResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -334,7 +556,7 @@ public class AppRepository {
             @Override
             public void onFailure(@NonNull Call<StoriesResponse> call, @NonNull Throwable t) {
                 System.out.println("Failed");
-                retrofitClient.storyResponseMutableLiveData.postValue(null);
+                retrofitClient.storiesResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -359,8 +581,106 @@ public class AppRepository {
         });
     }
 
+    public void insertLikesEntry(StoryLikes storyLikes) {
+        retrofitClient.apiInterface.insertLikesEntry(storyLikes.getStoryId(), storyLikes.getUserId(), storyLikes.isLiked(), storyLikes.isDisliked()).enqueue(new Callback<StoryLikesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Story likes entry inserted using API");
+                    retrofitClient.storyLikesResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyLikesResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getLikesByStoryIdAndUserId(StoryLikes storyLikes) {
+        retrofitClient.apiInterface.getLikesByStoryIdAndUserId(storyLikes.getStoryId(), storyLikes.getUserId()).enqueue(new Callback<StoryLikesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Story likes retrieved");
+                    retrofitClient.storyLikesResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyLikesResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void getAllLikesEntry() {
+        retrofitClient.apiInterface.getAllStoryLikes().enqueue(new Callback<List<StoryLikesResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoryLikesResponse>> call, @NonNull Response<List<StoryLikesResponse>> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("Retrieved all story like entries");
+                    retrofitClient.storyLikesListMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoryLikesResponse>> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyLikesListMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void updateStoryLikesIsLiked(StoryLikes storyLikes) {
+        retrofitClient.apiInterface.updateStoryIsLiked(storyLikes.getLikesId(), storyLikes.isLiked()).enqueue(new Callback<StoryLikesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story is liked check updated!");
+                    retrofitClient.storyLikesResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyLikesResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
+    public void updateStoryLikesIsDisliked(StoryLikes storyLikes) {
+        retrofitClient.apiInterface.updateStoryIsDisliked(storyLikes.getLikesId(), storyLikes.isDisliked()).enqueue(new Callback<StoryLikesResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story is disliked check updated!");
+                    retrofitClient.storyLikesResponseMutableLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
+                System.out.println("Failed");
+                retrofitClient.storyLikesResponseMutableLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
     public LiveData<StoryResponse> getStoryResponseLiveData() { return retrofitClient.storyResponseMutableLiveData; }
     public LiveData<List<StoryResponse>> getStoryListResponseLiveData() { return retrofitClient.storyListResponseMutableLiveData; }
     public LiveData<StoriesResponse> getStoriesResponseLiveData() { return retrofitClient.storiesResponseMutableLiveData; }
     public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return retrofitClient.storiesListResponseMutableLiveData; }
+    public LiveData<List<StoryLikesResponse>> getStoryLikesListResponseLiveData() { return retrofitClient.storyLikesListMutableLiveData; }
+    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return retrofitClient.storyLikesResponseMutableLiveData; }
+
 }

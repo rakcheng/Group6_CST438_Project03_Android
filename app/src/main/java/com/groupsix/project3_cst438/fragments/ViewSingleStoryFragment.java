@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewSingleStoryBinding;
-import com.groupsix.project3_cst438.fragments.adapters.ViewStoryAdapter;
+import com.groupsix.project3_cst438.fragments.recyclerViews.ViewStoryAdapter;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
@@ -28,6 +28,8 @@ public class ViewSingleStoryFragment extends Fragment {
     private StoryViewModel storyViewModel;
     private Story mStory;
 
+    int storyId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,7 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
-            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
+            storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
             // Story was previously stored in local database so use that instead of API
             mStory = storyViewModel.getLocalById(storyId);
         }
@@ -50,22 +52,40 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Recycler view setup
         binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(),mStory.getStoryList()));
+        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
 
+        // Setup text views to display story data
         binding.storyNameTextView.setText(mStory.getStoryName());
+        binding.likeTextView.setText(mStory.getLikes().toString());
+        binding.dislikeTextView.setText(mStory.getDislikes().toString());
 
-        binding.viewStoryBackBtn.setOnClickListener(view1 -> {
-            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-            controller.navigate(R.id.actionSingleStoryToHome);
+        // Infinite like or dislikes, should have check to only limit to 1 like
+        binding.likeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
+            binding.likeTextView.setText(mStory.getLikes().toString());
+            binding.dislikeTextView.setText(mStory.getDislikes().toString());
         });
 
+        binding.dislikeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
+            binding.likeTextView.setText(mStory.getLikes().toString());
+            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+        });
+
+        // If user clicks back button take them home
+        binding.viewStoryBackBtn.setOnClickListener(view1 -> {
+            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
+            controller.popBackStack();
+        });
+
+        // If user clicks finish button mark story as completed
         binding.finishStoryBtn.setOnClickListener(view1 -> {
             mStory.setOpen(false);
             storyViewModel.finishStoryExternal(mStory);
             storyViewModel.updateLocal(mStory);
             Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
 
-            // Now redirect to home and reset fragment
+            // Now pop backstack. Pops current fragment (view single story)
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
         });
