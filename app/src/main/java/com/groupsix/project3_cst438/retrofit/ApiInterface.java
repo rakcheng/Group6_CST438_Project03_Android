@@ -33,6 +33,12 @@ public interface ApiInterface {
     @PATCH("api/story/update")
     Call<StoryResponse> updateStoryIsOpen(@Query("storyId") int storyId, @Query("isOpen") boolean isOpen);
 
+    @PATCH("api/story/update")
+    Call<StoryResponse> updateStoryLikes(@Query("storyId") int storyId, @Query("likes") int likes);
+
+    @PATCH("api/story/update")
+    Call<StoryResponse> updateStoryDislikes(@Query("storyId") int storyId, @Query("dislikes") int dislikes);
+
     @GET("api/story/all")
     Call<List<StoryResponse>> getAllStory();
 
@@ -60,4 +66,21 @@ public interface ApiInterface {
     @POST("api/newstories")
     @FormUrlEncoded
     Call<StoriesResponse> insertStories (@Field("userId") int userId, @Field("story") String story);
+
+    @POST("api/likes/new")
+    @FormUrlEncoded
+    Call<StoryLikesResponse> insertLikesEntry(@Field("storyId") int storyId, @Field("userId") int userId, @Field("isLiked") boolean isLiked, @Field("isDisliked") boolean isDisliked);
+
+    @GET("api/likes/check")
+    Call<StoryLikesResponse> getLikesByStoryIdAndUserId(@Query("storyId") int storyId, @Query("userId") int userId);
+
+    @GET("api/likes")
+    Call<List<StoryLikesResponse>> getAllStoryLikes();
+
+    @PATCH("api/likes/isliked")
+    Call<StoryLikesResponse> updateStoryIsLiked(@Query("likesId") int likesId, @Query("isLiked") boolean isLiked);
+
+    @PATCH("api/likes/isdisliked")
+    Call<StoryLikesResponse> updateStoryIsDisliked(@Query("likesId") int likesId, @Query("isDisliked") boolean isDisliked);
+
 }

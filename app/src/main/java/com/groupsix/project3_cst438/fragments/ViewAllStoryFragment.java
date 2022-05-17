@@ -18,7 +18,11 @@ import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewAllStoryBinding;
 import com.groupsix.project3_cst438.fragments.recyclerViews.RecyclerViewInterface;
 import com.groupsix.project3_cst438.fragments.recyclerViews.ViewAllStoryAdapter;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  A class to view a list of stories using a recycler view. Each item can be clicked.

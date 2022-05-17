@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class ViewStoryAdapter extends RecyclerView.Adapter<ViewStoryAdapter.View
     Context context;
     List<Stories> mStories;
 
-    public ViewStoryAdapter(Context context, List<Stories> mStories) {
+    public ViewStoryAdapter(Context context, Story story) {
         this.context = context;
-        this.mStories = mStories;
+        this.mStories = story.getStoryList();
     }
 
     @NonNull

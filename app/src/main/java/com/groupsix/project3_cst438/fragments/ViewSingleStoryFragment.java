@@ -28,6 +28,8 @@ public class ViewSingleStoryFragment extends Fragment {
     private StoryViewModel storyViewModel;
     private Story mStory;
 
+    int storyId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,7 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
-            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
+            storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
             // Story was previously stored in local database so use that instead of API
             mStory = storyViewModel.getLocalById(storyId);
         }
@@ -50,9 +52,25 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Recycler view setup
         binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(),mStory.getStoryList()));
+        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
 
+        // Setup text views to display story data
         binding.storyNameTextView.setText(mStory.getStoryName());
+        binding.likeTextView.setText(mStory.getLikes().toString());
+        binding.dislikeTextView.setText(mStory.getDislikes().toString());
+
+        // Infinite like or dislikes, should have check to only limit to 1 like
+        binding.likeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
+            binding.likeTextView.setText(mStory.getLikes().toString());
+            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+        });
+
+        binding.dislikeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
+            binding.likeTextView.setText(mStory.getLikes().toString());
+            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+        });
 
         // If user clicks back button take them home
         binding.viewStoryBackBtn.setOnClickListener(view1 -> {

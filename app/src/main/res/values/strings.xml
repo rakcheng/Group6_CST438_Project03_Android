@@ -30,4 +30,9 @@
     <string name="finish_story">Finish Story</string>
     <string name="insert_story_name">Insert Story Name</string>
     <string name="go_back">Go Back</string>
+    <string name="back">Back</string>
+    <string name="like">Like</string>
+    <string name="dislike">Dislike</string>
+    <string name="dislikes">dislikes</string>
+    <string name="likes">likes</string>
 </resources>

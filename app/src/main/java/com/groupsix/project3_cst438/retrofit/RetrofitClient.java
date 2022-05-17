@@ -2,6 +2,8 @@ package com.groupsix.project3_cst438.retrofit;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.groupsix.project3_cst438.roomDB.entities.StoryLikes;
+
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -17,6 +19,8 @@ public class RetrofitClient {
     public MutableLiveData<List<StoryResponse>> storyListResponseMutableLiveData;
     public MutableLiveData<StoriesResponse> storiesResponseMutableLiveData;
     public MutableLiveData<List<StoriesResponse>> storiesListResponseMutableLiveData;
+    public MutableLiveData<StoryLikesResponse> storyLikesResponseMutableLiveData;
+    public MutableLiveData<List<StoryLikesResponse>> storyLikesListMutableLiveData;
 
     public RetrofitClient(String BASE_URL) {
         OkHttpClient client = new OkHttpClient();
@@ -25,6 +29,8 @@ public class RetrofitClient {
         storyListResponseMutableLiveData = new MutableLiveData<>();
         storiesResponseMutableLiveData = new MutableLiveData<>();
         storiesListResponseMutableLiveData = new MutableLiveData<>();
+        storyLikesResponseMutableLiveData = new MutableLiveData<>();
+        storyLikesListMutableLiveData = new MutableLiveData<>();
 
         apiInterface = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

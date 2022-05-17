@@ -6,13 +6,54 @@
     tools:context=".fragments.ViewSingleStoryFragment"
     >
 
+    <TextView
+        android:id="@+id/likeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom|start"
+        android:layout_marginStart="65dp"
+        android:layout_marginBottom="185dp"
+        android:text="@string/likes"
+        android:textSize="10pt" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center|start"
+        android:text="@string/like"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="125dp"
+        android:id="@+id/likeBtn"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom|end"
+        android:text="@string/dislikes"
+        android:layout_marginEnd="65dp"
+        android:layout_marginBottom="185dp"
+        android:textSize="10pt"
+        android:id="@+id/dislikeTextView"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center|end"
+        android:text="@string/dislike"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="125dp"
+        android:id="@+id/dislikeBtn"
+        />
+
     <Button
         android:id="@+id/finishStoryBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/finish_story"
-        android:layout_marginBottom="100dp"
-        android:layout_gravity="bottom|center" />
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="75dp"
+        android:text="@string/finish_story" />
 
     <Button
         android:id="@+id/viewStoryBackBtn"
@@ -20,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="150dp"
-        android:text="@string/go_back" />
+        android:text="@string/back" />
 
     <TextView
         android:layout_width="match_parent"
@@ -40,7 +81,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_single_story_stories"
             android:layout_width="match_parent"
-            android:layout_height="450dp"
+            android:layout_height="425dp"
             android:layout_marginTop="76dp" />
 
     </LinearLayout>

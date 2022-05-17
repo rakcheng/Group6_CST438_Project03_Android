@@ -19,6 +19,7 @@ import com.groupsix.project3_cst438.databinding.FragmentCreateStoryBinding;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
+import com.groupsix.project3_cst438.roomDB.entities.StoryLikes;
 import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
@@ -87,9 +88,17 @@ public class CreateStoryFragment extends Fragment {
                     assert storyResponse != null;
                     storyViewModel.insertLocal(storyResponse.getStory());
 
-                    // Pass safe args (storyId)
-                    NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(storyResponse.getStoryId());
-                    NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
+                    // Insert story likes table that checks if user has liked/disliked a story or not
+                    StoryLikes storyLikes = new StoryLikes(storyResponse.getStoryId(), storyResponse.getUserId(), false, false);
+                    storyViewModel.insertLikesEntryExternal(storyLikes);
+
+                    storyViewModel.getStoryLikesResponseLiveData().observe(getViewLifecycleOwner(), storyLikesResponse -> {
+                        storyViewModel.insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
+                        System.out.println("Story likes entry inserted in room db");
+                        // Pass safe args (storyId)
+                        NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(storyResponse.getStoryId());
+                        NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
+                    });
                 });
             });
         });
@@ -101,6 +110,7 @@ public class CreateStoryFragment extends Fragment {
         super.onStop();
         storiesViewModel.getStoriesListResponseLiveData().removeObservers(getViewLifecycleOwner());
         storyViewModel.getStoryResponseLiveData().removeObservers(getViewLifecycleOwner());
+        storyViewModel.getStoryLikesResponseLiveData().removeObservers(getViewLifecycleOwner());
     }
 
     private boolean getInputFields() {
