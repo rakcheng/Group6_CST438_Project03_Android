@@ -56,20 +56,17 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Setup text views to display story data
         binding.storyNameTextView.setText(mStory.getStoryName());
-        binding.likeTextView.setText(mStory.getLikes().toString());
-        binding.dislikeTextView.setText(mStory.getDislikes().toString());
+        setLikesAndDislikes();
 
         // Infinite like or dislikes, should have check to only limit to 1 like
         binding.likeBtn.setOnClickListener(view1 -> {
             mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
-            binding.likeTextView.setText(mStory.getLikes().toString());
-            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+            setLikesAndDislikes();
         });
 
         binding.dislikeBtn.setOnClickListener(view1 -> {
             mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
-            binding.likeTextView.setText(mStory.getLikes().toString());
-            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+            setLikesAndDislikes();
         });
 
         // If user clicks back button take them home
@@ -77,6 +74,12 @@ public class ViewSingleStoryFragment extends Fragment {
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
         });
+
+        // Hide button if story is closed or user is not creator of story
+        // TODO: Shared preferences get user and compare with user that created story
+        if (!mStory.getOpen()) {
+            binding.finishStoryBtn.setVisibility(View.GONE);
+        }
 
         // If user clicks finish button mark story as completed
         binding.finishStoryBtn.setOnClickListener(view1 -> {
@@ -91,6 +94,11 @@ public class ViewSingleStoryFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void setLikesAndDislikes() {
+        binding.likeTextView.setText(String.format("%s", mStory.getLikes().toString()));
+        binding.dislikeTextView.setText(String.format("%s", mStory.getDislikes().toString()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.groupsix.project3_cst438.roomDB.entities;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
@@ -15,6 +16,14 @@ public class Comment {
     private Integer userId;
 
     private String comment;
+
+    @Ignore
+    public Comment(Integer commentId, Integer storyId, Integer userId, String comment) {
+        this.commentId = commentId;
+        this.storyId = storyId;
+        this.userId = userId;
+        this.comment = comment;
+    }
 
     public Comment(Integer storyId, Integer userId, String comment) {
         this.storyId = storyId;

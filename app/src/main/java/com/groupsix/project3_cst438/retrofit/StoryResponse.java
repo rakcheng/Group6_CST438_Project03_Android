@@ -22,8 +22,8 @@ public class StoryResponse {
     @SerializedName("dislikes")
     private Integer dislikes;
 
-    @SerializedName("isOpen")
-    private boolean isOpen;
+    @SerializedName("open")
+    private boolean open;
 
     @SerializedName("storyList")
     private List<Stories> storiesList;
@@ -35,7 +35,7 @@ public class StoryResponse {
     public Integer getUserId() { return userId; }
 
     public Story getStory() {
-        return new Story(storyId, userId, storyName, likes, dislikes, isOpen, storiesList);
+        return new Story(storyId, userId, storyName, likes, dislikes, open, storiesList);
     }
 
 }

@@ -19,18 +19,18 @@ public class Story {
     private String storyName;
     private Integer likes;
     private Integer dislikes;
-    private Boolean isOpen;
+    private Boolean open;
 
     private List<Stories> storyList;
 
     @Ignore
-    public Story(Integer storyId, Integer userId, String storyName, Integer likes, Integer dislikes, boolean isOpen, List<Stories> storyList) {
+    public Story(Integer storyId, Integer userId, String storyName, Integer likes, Integer dislikes, boolean open, List<Stories> storyList) {
         this.storyId = storyId;
         this.userId = userId;
         this.storyName = storyName;
         this.likes = likes;
         this.dislikes = dislikes;
-        this.isOpen = isOpen;
+        this.open = open;
         this.storyList = storyList;
     }
 
@@ -40,7 +40,15 @@ public class Story {
         this.storyList = storyList;
         this.likes = 0;
         this.dislikes = 0;
-        this.isOpen = true;
+        this.open = true;
+    }
+
+    public Boolean getOpen() {
+        return open;
+    }
+
+    public void setOpen(Boolean open) {
+        this.open = open;
     }
 
     public Integer getLikes() {
@@ -57,14 +65,6 @@ public class Story {
 
     public void setDislikes(Integer dislikes) {
         this.dislikes = dislikes;
-    }
-
-    public Boolean getOpen() {
-        return isOpen;
-    }
-
-    public void setOpen(Boolean open) {
-        isOpen = open;
     }
 
     public Integer getStoryId() {
@@ -104,11 +104,11 @@ public class Story {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Story story = (Story) o;
-        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(likes, story.likes) && Objects.equals(dislikes, story.dislikes) && Objects.equals(isOpen, story.isOpen) && Objects.equals(storyList, story.storyList);
+        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(likes, story.likes) && Objects.equals(dislikes, story.dislikes) && Objects.equals(open, story.open) && Objects.equals(storyList, story.storyList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storyId, userId, storyName, likes, dislikes, isOpen, storyList);
+        return Objects.hash(storyId, userId, storyName, likes, dislikes, open, storyList);
     }
 }
