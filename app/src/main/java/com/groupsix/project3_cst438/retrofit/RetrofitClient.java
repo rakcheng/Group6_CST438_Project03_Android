@@ -21,6 +21,7 @@ public class RetrofitClient {
     public MutableLiveData<List<StoriesResponse>> storiesListResponseMutableLiveData;
     public MutableLiveData<StoryLikesResponse> storyLikesResponseMutableLiveData;
     public MutableLiveData<List<StoryLikesResponse>> storyLikesListMutableLiveData;
+    public MutableLiveData<StoryResponse> storyUpdatedResponseLiveData;
 
     public RetrofitClient(String BASE_URL) {
         OkHttpClient client = new OkHttpClient();
@@ -31,6 +32,7 @@ public class RetrofitClient {
         storiesListResponseMutableLiveData = new MutableLiveData<>();
         storyLikesResponseMutableLiveData = new MutableLiveData<>();
         storyLikesListMutableLiveData = new MutableLiveData<>();
+        storyUpdatedResponseLiveData = new MutableLiveData<>();
 
         apiInterface = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

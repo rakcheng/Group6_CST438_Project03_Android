@@ -58,9 +58,9 @@ public class AppRepository {
 
     // Retrofit client instance
     // Use this when running using backend app on heroku
-    public static final String BASE_URL = "https://calm-ravine-21524.herokuapp.com/";
+    //public static final String BASE_URL = "https://calm-ravine-21524.herokuapp.com/";
     // Use this when running back end locally
-    //public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of host for android emulator
+    public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of host for android emulator
     RetrofitClient retrofitClient = new RetrofitClient(BASE_URL);
 
     Observer<List<StoryResponse>> storyObserver;
@@ -73,7 +73,7 @@ public class AppRepository {
         mStoriesDao = mRoomDb.getStoriesDAO();
         mCommentDao = mRoomDb.getCommentsDAO();
         mStoryLikesDao = mRoomDb.getStoryLikesDAO();
-        updateStoryDB();
+        //updateStoryDB();
     }
 
     public static AppRepository getRepoInstance(Context context) {
@@ -373,6 +373,29 @@ public class AppRepository {
         });
     }
 
+    public void updateStoriesList(Story story) {
+        // List of stories body
+        Gson gson = new Gson();
+        String strList = gson.toJson(story.getStoryList());
+        RequestBody body = RequestBody.create(strList, MediaType.parse("application/json"));
+
+        retrofitClient.apiInterface.updateStoryList(story.getStoryId(), body).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story stories list updated successfully");
+                    retrofitClient.storyUpdatedResponseLiveData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                retrofitClient.storyUpdatedResponseLiveData.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
     public void updateStoryLikesCount(Story story) {
         retrofitClient.apiInterface.updateStoryLikes(story.getStoryId(), story.getLikes()).enqueue(new Callback<StoryResponse>() {
             @Override
@@ -385,7 +408,6 @@ public class AppRepository {
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                System.out.println("Failed");
                 retrofitClient.storyResponseMutableLiveData.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
@@ -544,7 +566,11 @@ public class AppRepository {
     }
 
     public void insertStories(Stories stories) {
-        retrofitClient.apiInterface.insertStories(stories.getUserId(), stories.getStory()).enqueue(new Callback<StoriesResponse>() {
+        Gson gson = new Gson();
+        String storyStr = gson.toJson(stories.getStoryParent());
+        RequestBody body = RequestBody.create(storyStr, MediaType.parse("application/json"));
+
+        retrofitClient.apiInterface.insertStories(stories.getUserId(), stories.getStory(), body).enqueue(new Callback<StoriesResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoriesResponse> call, @NonNull Response<StoriesResponse> response) {
                 if (response.isSuccessful()) {
@@ -682,5 +708,6 @@ public class AppRepository {
     public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return retrofitClient.storiesListResponseMutableLiveData; }
     public LiveData<List<StoryLikesResponse>> getStoryLikesListResponseLiveData() { return retrofitClient.storyLikesListMutableLiveData; }
     public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return retrofitClient.storyLikesResponseMutableLiveData; }
+    public LiveData<StoryResponse> getStoryUpdatedResponseLiveData() { return retrofitClient.storyUpdatedResponseLiveData; }
 
 }

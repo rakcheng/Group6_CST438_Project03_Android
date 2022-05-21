@@ -61,45 +61,58 @@ public class CreateStoryFragment extends Fragment {
         View view = binding.getRoot();
 
         binding.createStoryBtn.setOnClickListener(view1 -> {
+            view1.setOnClickListener(null); // Prevent multiple clicks
+            // What this is doing. Not the most efficient solution?
+            // 1. Create the story first.
+            // 2. Insert using API into backend database
+            // 3. Observe live data for changes
+            // 4. Get updated storyId from Response
+            // 5. Create stories object and use story as parent of it.
+            // 6. Insert stories into backend database
+            // 7. Update story in backend database
+
+            List<Stories> storyList = new ArrayList<>();
+            // TODO: Replace with shared preferences user Id
+            Story story =  new Story(2, "empty", storyList);
+            // Create story first, null object
             if (getInputFields()) {
-                // TODO: Replace with shared preferences user Id
-                Stories stories = new Stories(2, mInitialStory);
-                storiesViewModel.insertExternal(stories);
+                story.setStoryName(mStoryName);
+                storyViewModel.insertExternal(story); // Insert story to get its ID
             }
 
+            storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
+                Stories stories =  new Stories(2, mInitialStory, storyResponse.getStory());
+                story.setStoryId(storyResponse.getStoryId());
+                storiesViewModel.insertExternal(stories);
+            });
+
             storiesViewModel.getStoriesResponseLiveData().observe(getViewLifecycleOwner(), storiesResponse -> {
-                System.out.println("Stories livedata has been observed!");
-
-                // Stories now has updated storiesId from external database
-                List<Stories> storyList = new ArrayList<>();
                 storyList.add(storiesResponse.getStory());
+                story.setStoryList(storyList);
+                storyViewModel.updateExternalStoriesList(story);
+            });
 
-                Story story = new Story(2, mStoryName, storyList);
-
-                // Once other endpoints are done check if it already exists in local/backend database
-                storyViewModel.insertExternal(story);
+            storyViewModel.getStoryUpdatedResponseLiveData().observe(getViewLifecycleOwner(), storyResponse1 -> {
                 Toast.makeText(getActivity(), "Story created successfully", Toast.LENGTH_SHORT).show();
-
                 binding.initialStoryEditText.setText("");
                 binding.storyNameEditText.setText("");
 
-                // Pass storyId argument to fragment once story live data changes
-                storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
-                    assert storyResponse != null;
-                    storyViewModel.insertLocal(storyResponse.getStory());
+                assert storyResponse1 != null;
+                storyViewModel.insertLocal(storyResponse1.getStory());
 
-                    // Insert story likes table that checks if user has liked/disliked a story or not
-                    StoryLikes storyLikes = new StoryLikes(storyResponse.getStoryId(), storyResponse.getUserId(), false, false);
-                    storyViewModel.insertLikesEntryExternal(storyLikes);
 
-                    storyViewModel.getStoryLikesResponseLiveData().observe(getViewLifecycleOwner(), storyLikesResponse -> {
-                        storyViewModel.insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
-                        System.out.println("Story likes entry inserted in room db");
-                        // Pass safe args (storyId)
-                        NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(storyResponse.getStoryId());
-                        NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
-                    });
-                });
+                // FIRST CHECK IF IT ALREADY EXISTS IF SO UPDATE EXISTING ONE
+                StoryLikes storyLikes = new StoryLikes(storyResponse1.getStoryId(), storyResponse1.getUserId(), false, false);
+                storyViewModel.insertLikesEntryExternal(storyLikes);
+            });
+
+            storyViewModel.getStoryLikesResponseLiveData().observe(getViewLifecycleOwner(), storyLikesResponse -> {
+                // Check if it already exists in room database if so update it if not insert it
+                storyViewModel.insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
+
+                // Now navigate to fragment where you can view it
+                NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(story.getStoryId());
+                NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
             });
         });
         return view;

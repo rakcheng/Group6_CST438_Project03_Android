@@ -24,6 +24,7 @@ public class StoryViewModel extends AndroidViewModel {
 
     public void insertLocal(Story story) { mRepository.insertLocalStory(story);}
     public void insertExternal(Story story) { mRepository.insertStory(story);}
+    public void updateExternalStoriesList(Story story) { mRepository.updateStoriesList(story); }
 
     public void updateLocal(Story story) { mRepository.updateLocalStory(story);}
     public void updateLikesCount(Story story) { mRepository.updateStoryLikesCount(story); }
@@ -61,6 +62,7 @@ public class StoryViewModel extends AndroidViewModel {
     public LiveData<StoryResponse> getStoryResponseLiveData() { return mRepository.getStoryResponseLiveData(); }
 
     public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return mRepository.getStoryLikesResponseLiveData(); }
+    public LiveData<StoryResponse> getStoryUpdatedResponseLiveData() { return mRepository.getStoryUpdatedResponseLiveData();}
 
     public void insertLikesEntryExternal(StoryLikes storyLikes) { mRepository.insertLikesEntry(storyLikes);}
     public void insertLocalLikesEntry(StoryLikes storyLikes) { mRepository.insertLocalLikesEntry(storyLikes);}

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -29,6 +30,9 @@ public interface ApiInterface {
     //@Headers("Content-Type: application/json")
     @POST("api/newstory")
     Call<StoryResponse> insertStory (@Query("userId") int userId, @Query("storyName") String storyName, @Body RequestBody storyList);
+
+    @PATCH("api/story/update/list")
+    Call<StoryResponse> updateStoryList(@Query("storyId") int storyId, @Body RequestBody jsonStories);
 
     @PATCH("api/story/update")
     Call<StoryResponse> updateStoryIsOpen(@Query("storyId") int storyId, @Query("isOpen") boolean isOpen);
@@ -64,8 +68,7 @@ public interface ApiInterface {
     Call<List<StoriesResponse>> getStoriesByUserIdAndStory (@Query("userId") int userId, @Query("story") String story);
 
     @POST("api/newstories")
-    @FormUrlEncoded
-    Call<StoriesResponse> insertStories (@Field("userId") int userId, @Field("story") String story);
+    Call<StoriesResponse> insertStories (@Query("userId") int userId, @Query("story") String story, @Body RequestBody jsonStory);
 
     @POST("api/likes/new")
     @FormUrlEncoded

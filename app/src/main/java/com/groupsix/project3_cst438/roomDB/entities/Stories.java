@@ -14,9 +14,12 @@ public class Stories {
     private Integer userId;
     private String story;
 
-    public Stories(Integer userId, String story) {
+    private Story storyParent;
+
+    public Stories(Integer userId, String story, Story storyParent) {
         this.userId = userId;
         this.story = story;
+        this.storyParent = storyParent;
     }
 
     public Integer getStoriesId() {
@@ -43,16 +46,24 @@ public class Stories {
         this.story = story;
     }
 
+    public Story getStoryParent() {
+        return storyParent;
+    }
+
+    public void setStoryParent(Story storyParent) {
+        this.storyParent = storyParent;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Stories stories = (Stories) o;
-        return Objects.equals(storiesId, stories.storiesId) && Objects.equals(userId, stories.userId) && Objects.equals(story, stories.story);
+        return Objects.equals(storiesId, stories.storiesId) && Objects.equals(userId, stories.userId) && Objects.equals(story, stories.story) && Objects.equals(storyParent, stories.storyParent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storiesId, userId, story);
+        return Objects.hash(storiesId, userId, story, storyParent);
     }
 }

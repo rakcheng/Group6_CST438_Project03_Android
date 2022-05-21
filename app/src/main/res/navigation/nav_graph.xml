@@ -55,5 +55,9 @@
         <action
             android:id="@+id/actionSingleStoryToHome"
             app:destination="@id/home_fragment" />
+
+        <action
+            android:id="@+id/actionSingleStoryToCreateStory"
+            app:destination="@+id/createStoryFragment"/>
     </fragment>
 </navigation>
