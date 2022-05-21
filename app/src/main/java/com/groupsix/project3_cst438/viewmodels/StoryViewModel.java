@@ -19,6 +19,9 @@ public class StoryViewModel extends AndroidViewModel {
     private final StoryRepository mStoryRepo;
     private final StoryLikesRepository mStoryLikesRepo;
 
+    // Declare livedata here.
+    // Then just pass mutable livedata to repository functions and it should update if changes are made
+
     public StoryViewModel(@NonNull Application application) {
         super(application);
         mStoryRepo = StoryRepository.getRepoInstance(application.getApplicationContext());
@@ -26,11 +29,17 @@ public class StoryViewModel extends AndroidViewModel {
     }
 
     // ============ GET LIVE DATA ===============
-    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() { return mStoryRepo.getStoryListResponseLiveData(); }
-    public LiveData<StoryResponse> getStoryResponseLiveData() { return mStoryRepo.getStoryResponseLiveData(); }
-    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return mStoryLikesRepo.getStoryLikesResponseLiveData(); }
+    public LiveData<StoryResponse> getStoryResponseLiveData() {
+        return mStoryRepo.getStoryResponse();
+    }
+    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() {
+        return mStoryRepo.getStoryListResponse();
+    }
+    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() {
+        return mStoryLikesRepo.getStoryLikesResponseLiveData();
+    }
     public LiveData<List<Story>> getAllLocal() {
-        return mStoryRepo.getAllLocalStoryLiveData();
+        return mStoryRepo.getAllStoryLocal();
     }
     // ==========================================
 

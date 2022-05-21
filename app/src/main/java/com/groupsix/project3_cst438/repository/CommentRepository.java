@@ -3,36 +3,27 @@ package com.groupsix.project3_cst438.repository;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.groupsix.project3_cst438.retrofit.CommentResponse;
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
-import com.groupsix.project3_cst438.retrofit.UserResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.CommentDAO;
-import com.groupsix.project3_cst438.roomDB.DAO.UserDAO;
 import com.groupsix.project3_cst438.roomDB.entities.Comment;
 
 import java.util.List;
 import java.util.concurrent.Future;
 
 public class CommentRepository {
-    public static CommentRepository repoInstance;
-    private AppDatabase mRoomDb;
+    private static CommentRepository repoInstance;
+    private final AppDatabase mRoomDb;
     private CommentDAO mCommentDao;
 
-    RetrofitClient mRetrofitClient;
+    private final RetrofitClient mRetrofitClient;
 
-    public MutableLiveData<CommentResponse> commentResponseMutableLiveData;
-    public MutableLiveData<List<CommentResponse>> commentResponseListMutableLiveData;
-
-    public CommentRepository(Context context) {
+    private CommentRepository(Context context) {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mCommentDao = mRoomDb.getCommentsDAO();
-
-        commentResponseMutableLiveData = new MutableLiveData<>();
-        commentResponseListMutableLiveData = new MutableLiveData<>();
     }
 
     public static CommentRepository getRepoInstance(Context context) {
@@ -43,8 +34,8 @@ public class CommentRepository {
     }
 
     public LiveData<List<Comment>> getAllLocalCommentsLiveData() { return mCommentDao.getAllComments(); }
-    public LiveData<CommentResponse> getCommentResponseLiveData() { return commentResponseMutableLiveData; }
-    public LiveData<List<CommentResponse>> getListCommentResponseLiveData() { return commentResponseListMutableLiveData; }
+    public LiveData<CommentResponse> getCommentResponseLiveData() { return mRetrofitClient.commentResponse; }
+    public LiveData<List<CommentResponse>> getListCommentResponseLiveData() { return mRetrofitClient.commentResponseList; }
 
     public void insertLocalComment(Comment comment) {
         AppDatabase.databaseWriteExecutor.execute(() ->{

@@ -2,10 +2,12 @@ package com.groupsix.project3_cst438.roomDB;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.groupsix.project3_cst438.roomDB.DAO.CommentDAO;
 import com.groupsix.project3_cst438.roomDB.DAO.StoryLikesDAO;
@@ -57,4 +59,19 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return dbInstance;
     }
+
+    // Pre populate database when it's created
+    /*private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            populateDB(dbInstance);
+        }
+    };
+
+    private static void populateDB(AppDatabase db) {
+        AppDatabase.databaseWriteExecutor.execute(() ->{
+
+        });
+    }*/
 }

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -49,7 +50,7 @@ public class CreateStoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = null;
+        // Owner of view model lifecycle is fragment
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
         storiesViewModel = new ViewModelProvider(this).get(StoriesViewModel.class);
     }
@@ -62,6 +63,8 @@ public class CreateStoryFragment extends Fragment {
 
         binding.createStoryBtn.setOnClickListener(view1 -> {
             if (getInputFields()) {
+                // Prevent multiple clicks to create story
+                view1.setOnClickListener(null);
                 // TODO: Replace with shared preferences user Id
                 Stories stories = new Stories(2, mInitialStory);
                 storiesViewModel.insertExternal(stories);
@@ -78,14 +81,12 @@ public class CreateStoryFragment extends Fragment {
 
                 // Once other endpoints are done check if it already exists in local/backend database
                 storyViewModel.insertExternal(story);
-                Toast.makeText(getActivity(), "Story created successfully", Toast.LENGTH_SHORT).show();
-
-                binding.initialStoryEditText.setText("");
-                binding.storyNameEditText.setText("");
 
                 // Pass storyId argument to fragment once story live data changes
                 storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
-                    assert storyResponse != null;
+                    Toast.makeText(getActivity(), "Story created successfully", Toast.LENGTH_SHORT).show();
+                    binding.initialStoryEditText.setText("");
+                    binding.storyNameEditText.setText("");
                     storyViewModel.insertLocal(storyResponse.getStory());
 
                     // Insert story likes table that checks if user has liked/disliked a story or not
@@ -102,15 +103,14 @@ public class CreateStoryFragment extends Fragment {
                 });
             });
         });
+
         return view;
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        storiesViewModel.getStoriesListResponseLiveData().removeObservers(getViewLifecycleOwner());
-        storyViewModel.getStoryResponseLiveData().removeObservers(getViewLifecycleOwner());
-        storyViewModel.getStoryLikesResponseLiveData().removeObservers(getViewLifecycleOwner());
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 
     private boolean getInputFields() {

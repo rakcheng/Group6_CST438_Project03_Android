@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
@@ -22,22 +21,17 @@ import retrofit2.Response;
 
 public class StoryLikesRepository {
     public static StoryLikesRepository repoInstance;
-    private AppDatabase mRoomDb;
+    private final AppDatabase mRoomDb;
     private StoryLikesDAO mStoryLikesDao;
 
-    private RetrofitClient mRetrofitClient;
+    private final RetrofitClient mRetrofitClient;
 
     private Observer<List<StoryLikesResponse>> storyLikesObserver;
-    public MutableLiveData<StoryLikesResponse> storyLikesResponseMutableLiveData;
-    public MutableLiveData<List<StoryLikesResponse>> storyLikesResponseListMutableLiveData;
 
-    public StoryLikesRepository(Context context) {
+    private StoryLikesRepository(Context context) {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mStoryLikesDao = mRoomDb.getStoryLikesDAO();
-
-        storyLikesResponseMutableLiveData = new MutableLiveData<>();
-        storyLikesResponseListMutableLiveData = new MutableLiveData<>();
     }
 
     public static StoryLikesRepository getRepoInstance(Context context) {
@@ -50,8 +44,8 @@ public class StoryLikesRepository {
     public LiveData<List<StoryLikes>> getAllLocalStoryLikesLiveData() { return mStoryLikesDao.getAll(); }
 
     // API response live data
-    public LiveData<List<StoryLikesResponse>> getStoryLikesListResponseLiveData() { return storyLikesResponseListMutableLiveData; }
-    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return storyLikesResponseMutableLiveData; }
+    public LiveData<List<StoryLikesResponse>> getStoryLikesListResponseLiveData() { return mRetrofitClient.storyLikesResponseList; }
+    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return mRetrofitClient.storyLikesResponse; }
 
     public void updateRoomDBFromExternal() {
         getAllLikesEntry();
@@ -110,13 +104,13 @@ public class StoryLikesRepository {
             public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
                 if (response.isSuccessful()) {
                     System.out.println("Story likes entry inserted using API");
-                    storyLikesResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyLikesResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
-                storyLikesResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyLikesResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -128,13 +122,13 @@ public class StoryLikesRepository {
             public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
                 if (response.isSuccessful()) {
                     System.out.println("Story likes retrieved");
-                    storyLikesResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyLikesResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
-                storyLikesResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyLikesResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -146,13 +140,13 @@ public class StoryLikesRepository {
             public void onResponse(@NonNull Call<List<StoryLikesResponse>> call, @NonNull Response<List<StoryLikesResponse>> response) {
                 if (response.isSuccessful()) {
                     System.out.println("Retrieved all story like entries");
-                    storyLikesResponseListMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyLikesResponseList.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoryLikesResponse>> call, @NonNull Throwable t) {
-                storyLikesResponseListMutableLiveData.postValue(null);
+                mRetrofitClient.storyLikesResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -164,13 +158,13 @@ public class StoryLikesRepository {
             public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story is liked check updated!");
-                    storyLikesResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyLikesResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
-                storyLikesResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyLikesResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -182,13 +176,13 @@ public class StoryLikesRepository {
             public void onResponse(@NonNull Call<StoryLikesResponse> call, @NonNull Response<StoryLikesResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story is disliked check updated!");
-                    storyLikesResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyLikesResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryLikesResponse> call, @NonNull Throwable t) {
-                storyLikesResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyLikesResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });

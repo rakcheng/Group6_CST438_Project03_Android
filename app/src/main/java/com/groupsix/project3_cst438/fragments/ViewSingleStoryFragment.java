@@ -18,6 +18,7 @@ import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewSingleStoryBinding;
 import com.groupsix.project3_cst438.fragments.recyclerViews.ViewStoryAdapter;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
+import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
 /**
@@ -33,8 +34,18 @@ public class ViewSingleStoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = null;
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
@@ -42,13 +53,6 @@ public class ViewSingleStoryFragment extends Fragment {
             // Story was previously stored in local database so use that instead of API
             mStory = storyViewModel.getLocalById(storyId);
         }
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
 
         // Recycler view setup
         binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -73,6 +77,7 @@ public class ViewSingleStoryFragment extends Fragment {
         binding.viewStoryBackBtn.setOnClickListener(view1 -> {
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
+            // TODO: CHANGE THIS ITS WHATS CAUSING IT TO KEEP LIVEDATA STALE
         });
 
         // Hide button if story is closed or user is not creator of story
@@ -90,10 +95,9 @@ public class ViewSingleStoryFragment extends Fragment {
 
             // Now pop backstack. Pops current fragment (view single story)
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-            controller.popBackStack();
+            //controller.popBackStack();
+            controller.navigateUp();
         });
-
-        return view;
     }
 
     private void setLikesAndDislikes() {

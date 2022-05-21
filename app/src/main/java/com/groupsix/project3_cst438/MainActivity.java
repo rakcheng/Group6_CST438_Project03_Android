@@ -1,6 +1,7 @@
 package com.groupsix.project3_cst438;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -9,6 +10,8 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
+import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
 /**
  *  Main (and only activity in project) Project uses Android Jetpack Navigation Component
@@ -16,7 +19,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
  */
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

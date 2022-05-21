@@ -4,14 +4,11 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
 import com.groupsix.project3_cst438.retrofit.StoriesResponse;
-import com.groupsix.project3_cst438.retrofit.UserResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.StoriesDAO;
-import com.groupsix.project3_cst438.roomDB.DAO.UserDAO;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 
 import java.util.List;
@@ -22,22 +19,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class StoriesRepository {
-    public static StoriesRepository repoInstance;
-    private AppDatabase mRoomDb;
+    private static StoriesRepository repoInstance;
+    private final AppDatabase mRoomDb;
     private StoriesDAO mStoriesDao;
 
     private final RetrofitClient mRetrofitClient;
 
-    public MutableLiveData<StoriesResponse> storiesResponseMutableLiveData;
-    public MutableLiveData<List<StoriesResponse>> storiesListResponseMutableLiveData;
-
-    public StoriesRepository(Context context) {
+    private StoriesRepository(Context context) {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mStoriesDao = mRoomDb.getStoriesDAO();
-
-        storiesResponseMutableLiveData = new MutableLiveData<>();
-        storiesListResponseMutableLiveData = new MutableLiveData<>();
     }
 
     public static StoriesRepository getRepoInstance(Context context) {
@@ -49,9 +40,8 @@ public class StoriesRepository {
 
     // Livedata to check if stories table was changed in room database
     public LiveData<List<Stories>> getAllLocalStoriesLiveData() { return mStoriesDao.getAll(); }
-
-    public LiveData<StoriesResponse> getStoriesResponseLiveData() { return storiesResponseMutableLiveData; }
-    public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return storiesListResponseMutableLiveData; }
+    public LiveData<StoriesResponse> getStoriesResponseLiveData() { return mRetrofitClient.storiesResponse; }
+    public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return mRetrofitClient.storiesResponseList; }
 
     public void insertLocalStories(Stories stories) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
@@ -106,13 +96,13 @@ public class StoriesRepository {
             public void onResponse(@NonNull Call<StoriesResponse> call, @NonNull Response<StoriesResponse> response) {
                 if (response.isSuccessful()) {
                     System.out.println("Stories created successfully");
-                    storiesResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storiesResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoriesResponse> call, @NonNull Throwable t) {
-                storiesResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storiesResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -124,13 +114,13 @@ public class StoriesRepository {
             public void onResponse(@NonNull Call<List<StoriesResponse>> call, @NonNull Response<List<StoriesResponse>> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Stories retrieved by userId and story successfully");
-                    storiesListResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storiesResponseList.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoriesResponse>> call, @NonNull Throwable t) {
-                storiesListResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storiesResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });

@@ -16,19 +16,15 @@ import java.util.concurrent.Future;
 
 public class UserRepository {
     public static UserRepository repoInstance;
-    private AppDatabase mRoomDb;
+    private final AppDatabase mRoomDb;
     private UserDAO mUserDao;
 
-    RetrofitClient mRetrofitClient;
+    private final RetrofitClient mRetrofitClient;
 
-    public MutableLiveData<UserResponse> userResponseMutableLiveData;
-
-    public UserRepository(Context context) {
+    private UserRepository(Context context) {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mUserDao = mRoomDb.getUserDAO();
-
-        userResponseMutableLiveData = new MutableLiveData<>();
     }
 
     public static UserRepository getRepoInstance(Context context) {

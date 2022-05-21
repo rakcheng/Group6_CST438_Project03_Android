@@ -4,17 +4,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.google.gson.Gson;
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
-import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
-import com.groupsix.project3_cst438.retrofit.UserResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.StoryDAO;
-import com.groupsix.project3_cst438.roomDB.DAO.UserDAO;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
@@ -27,23 +23,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class StoryRepository {
-    public static StoryRepository repoInstance;
-    private AppDatabase mRoomDb;
+    private static StoryRepository repoInstance;
+    private final AppDatabase mRoomDb;
     private StoryDAO mStoryDao;
 
     private final RetrofitClient mRetrofitClient;
 
     Observer<List<StoryResponse>> storyObserver;
-    public MutableLiveData<StoryResponse> storyResponseMutableLiveData;
-    public MutableLiveData<List<StoryResponse>> storyListResponseMutableLiveData;
 
-    public StoryRepository(Context context) {
+    private StoryRepository(Context context) {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mStoryDao = mRoomDb.getStoryDAO();
-
-        storyResponseMutableLiveData = new MutableLiveData<>();
-        storyListResponseMutableLiveData = new MutableLiveData<>();
     }
 
     public static StoryRepository getRepoInstance(Context context) {
@@ -54,11 +45,14 @@ public class StoryRepository {
     }
 
     // Livedata to check if story table was changed in room database
-    public LiveData<List<Story>> getAllLocalStoryLiveData() { return mStoryDao.getAll(); }
+    public LiveData<List<Story>> getAllStoryLocal() { return mStoryDao.getAll(); }
 
     // Livedata to check response from API
-    public LiveData<StoryResponse> getStoryResponseLiveData() { return storyResponseMutableLiveData; }
-    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() { return storyListResponseMutableLiveData; }
+    public void resetStoryResponse() {
+        mRetrofitClient.storyResponse.setValue(null);
+    }
+    public LiveData<StoryResponse> getStoryResponse() { return mRetrofitClient.storyResponse; }
+    public LiveData<List<StoryResponse>> getStoryListResponse() { return mRetrofitClient.storyResponseList; }
 
     // USE THIS TO UPDATE FROM EXTERNAL API WHEN APP STARTS
     public void updateRoomDBFromExternal() {
@@ -69,10 +63,10 @@ public class StoryRepository {
             for (StoryResponse storyResponse : storyResponseList) {
                 insertLocalStory(storyResponse.getStory());
             }
-            getStoryListResponseLiveData().removeObserver(storyObserver);
+            getStoryListResponse().removeObserver(storyObserver);
         };
 
-        getStoryListResponseLiveData().observeForever(storyObserver);
+        getStoryListResponse().observeForever(storyObserver);
         System.out.println("Updated Story Table with REST API data");
     }
 
@@ -146,14 +140,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if (response.isSuccessful()) {
                     System.out.println("Story created successfully");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                System.out.println("Failed");
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -165,13 +158,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story likes updated!");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -182,13 +175,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story dislikes updated!");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -200,13 +193,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story closed successfully");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -218,13 +211,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Retrieved all story!");
-                    storyListResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponseList.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
-                storyListResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -236,13 +229,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Retrieved all open story!");
-                    storyListResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponseList.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
-                storyListResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -254,13 +247,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Retrieved all closed story!");
-                    storyListResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponseList.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
-                storyListResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -272,13 +265,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story retrieved by story id successfully");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -290,13 +283,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<List<StoryResponse>> call, @NonNull Response<List<StoryResponse>> response) {
                 if(response.isSuccessful()) {
                     System.out.println("All story retrieved by user id successfully");
-                    storyListResponseMutableLiveData.postValue(response.body()); // May need to change this
+                    mRetrofitClient.storyResponseList.postValue(response.body()); // May need to change this
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<StoryResponse>> call, @NonNull Throwable t) {
-                storyListResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponseList.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });
@@ -308,13 +301,13 @@ public class StoryRepository {
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
                     System.out.println("Story retrieved by name successfully");
-                    storyResponseMutableLiveData.postValue(response.body());
+                    mRetrofitClient.storyResponse.postValue(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
-                storyResponseMutableLiveData.postValue(null);
+                mRetrofitClient.storyResponse.postValue(null);
                 System.out.println("Error" + t.getMessage());
             }
         });

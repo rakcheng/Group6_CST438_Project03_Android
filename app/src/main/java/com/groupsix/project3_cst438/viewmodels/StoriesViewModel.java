@@ -12,11 +12,20 @@ import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import java.util.List;
 
 public class StoriesViewModel extends AndroidViewModel {
-    private StoriesRepository mStoriesRepo;
+    private final StoriesRepository mStoriesRepo;
 
     public StoriesViewModel(Application application) {
         super(application);
         mStoriesRepo = StoriesRepository.getRepoInstance(application.getApplicationContext());
+    }
+
+    // Return value of livedata that isn't mutable (cannot change)
+    public LiveData<StoriesResponse> getStoriesResponseLiveData() {
+        return mStoriesRepo.getStoriesResponseLiveData();
+    }
+
+    public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() {
+        return mStoriesRepo.getStoriesListResponseLiveData();
     }
 
     public void insertLocal(Stories stories) { mStoriesRepo.insertLocalStories(stories);}
@@ -35,13 +44,5 @@ public class StoriesViewModel extends AndroidViewModel {
 
     public void getExternalByUserIdAndStory(int userId, String story) {
         mStoriesRepo.getStoriesByUserIdAndStory(userId, story);
-    }
-
-    public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() {
-        return mStoriesRepo.getStoriesListResponseLiveData();
-    }
-
-    public LiveData<StoriesResponse> getStoriesResponseLiveData() {
-        return mStoriesRepo.getStoriesResponseLiveData();
     }
 }

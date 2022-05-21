@@ -36,22 +36,23 @@ public class ViewAllStoryFragment extends Fragment implements RecyclerViewInterf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = null;
-        storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentViewAllStoryBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+        return binding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
         // Observe changes to story list (stored in room database)
         storyViewModel.getAllLocal().observe(getViewLifecycleOwner(), stories -> {
             binding.recyclerAllStoryNames.setLayoutManager(new LinearLayoutManager(getActivity()));
             binding.recyclerAllStoryNames.setAdapter(new ViewAllStoryAdapter(getContext(), stories, this));
         });
-
-        return view;
     }
 
     @Override
