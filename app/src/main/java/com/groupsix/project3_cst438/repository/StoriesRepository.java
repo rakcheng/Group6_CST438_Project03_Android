@@ -11,6 +11,7 @@ import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.DAO.StoriesDAO;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -42,6 +43,7 @@ public class StoriesRepository {
     }
 
     // Livedata to check if stories table was changed in room database
+    public LiveData<List<Stories>> getAllLocalStoriesByParent(Story story) { return mStoriesDao.getAllBelongingToStory(story.getStoryId()); }
     public LiveData<List<Stories>> getAllLocalStoriesLiveData() { return mStoriesDao.getAll(); }
     public LiveData<StoriesResponse> getStoriesResponseLiveData() { return mRetrofitClient.storiesResponse; }
     public LiveData<List<StoriesResponse>> getStoriesListResponseLiveData() { return mRetrofitClient.storiesResponseList; }

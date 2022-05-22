@@ -1,5 +1,6 @@
 package com.groupsix.project3_cst438.retrofit;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
@@ -15,10 +16,12 @@ public class StoriesResponse {
     private String story;
 
     @SerializedName("storyParent")
-    private Story storyParent;
+    private String storyParentJson;
 
     public Stories getStory() {
-        Stories stories = new Stories(userId, story, storyParent);
+        Gson gson = new Gson();
+        Story storyParent = gson.fromJson(String.valueOf(storyParentJson), Story.class);
+        Stories stories = new Stories(userId, story, storyParent, null);
         stories.setStoriesId(storiesId);
         return stories;
     }

@@ -23,9 +23,9 @@ public class ViewStoryAdapter extends RecyclerView.Adapter<ViewStoryAdapter.View
     Context context;
     List<Stories> mStories;
 
-    public ViewStoryAdapter(Context context, Story story) {
+    public ViewStoryAdapter(Context context, List<Stories> storiesList) {
         this.context = context;
-        this.mStories = story.getStoryList();
+        this.mStories = storiesList;
     }
 
     @NonNull
@@ -51,7 +51,7 @@ public class ViewStoryAdapter extends RecyclerView.Adapter<ViewStoryAdapter.View
         public ViewHolderClass(@NonNull View storyView) {
             super(storyView);
 
-            story_textView = (TextView) storyView.findViewById(R.id.storyTextViewRecycler);
+            story_textView = storyView.findViewById(R.id.storyTextViewRecycler);
 
         }
     }

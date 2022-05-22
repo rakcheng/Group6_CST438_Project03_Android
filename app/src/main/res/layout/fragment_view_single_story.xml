@@ -1,90 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ViewSingleStoryFragment"
-    >
+    tools:context=".fragments.CreateStoryFragment"
+    android:id="@+id/fragment_container_view_single_story">
 
     <TextView
-        android:id="@+id/likeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom|start"
-        android:layout_marginStart="65dp"
-        android:layout_marginBottom="185dp"
-        android:text="@string/likes"
-        android:textSize="10pt" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center|start"
-        android:text="@string/like"
-        android:layout_marginStart="25dp"
-        android:layout_marginBottom="125dp"
-        android:id="@+id/likeBtn"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom|end"
-        android:text="@string/dislikes"
-        android:layout_marginEnd="65dp"
-        android:layout_marginBottom="185dp"
-        android:textSize="10pt"
-        android:id="@+id/dislikeTextView"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center|end"
-        android:text="@string/dislike"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="125dp"
-        android:id="@+id/dislikeBtn"
-        />
-
-    <Button
-        android:id="@+id/finishStoryBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="75dp"
-        android:text="@string/finish_story" />
-
-    <Button
-        android:id="@+id/viewStoryBackBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="150dp"
-        android:text="@string/back" />
-
-    <TextView
+        android:id="@+id/storyNameTextView"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:id="@+id/storyNameTextView"
+        android:layout_marginBottom="225dp"
+        android:paddingTop="12dp"
         android:text="@string/insert_story_name"
         android:textAlignment="center"
         android:textSize="15pt"
-        android:paddingTop="12dp"
-        />
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutRecycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayoutRecycler"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:id="@+id/linearLayoutRecycler">
+        android:layout_height="300dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_single_story_stories"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="425dp"
-            android:layout_marginTop="76dp" />
+            android:layout_marginTop="76dp"
+            android:layout_height="225dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_single_story_stories"
+                android:layout_width="match_parent"
+                android:layout_height="225dp"
+                android:layout_marginTop="76dp" />
+
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="407dp"
+        android:layout_height="325dp"
 
-</FrameLayout>
+        android:layout_marginTop="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutRecycler"
+        app:layout_constraintVertical_bias="0.057">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addToStoryEditText"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="331dp"
+            android:layout_height="57dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_corner"
+            android:hint="@string/add_to_current_story"
+            android:maxLines="1"
+            android:paddingStart="20dp"
+            android:paddingEnd="50dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.28"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </com.google.android.material.textfield.TextInputEditText>
+
+        <Button
+            android:id="@+id/addStoriesBtn"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawableLeft="@drawable/ic_baseline_send_24"
+            android:scaleX="-1"
+            app:layout_constraintBottom_toTopOf="@+id/dislikeTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/addToStoryEditText"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+        </Button>
+
+        <Button
+            android:id="@+id/viewStoryBackBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="80dp"
+            android:text="@string/back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/finishStoryBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:text="@string/finish_story"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/dislikeBtn"
+            app:layout_constraintHorizontal_bias="0.44"
+            app:layout_constraintStart_toEndOf="@+id/likeBtn"
+            app:layout_constraintTop_toBottomOf="@+id/viewStoryBackBtn"
+            app:layout_constraintVertical_bias="0.053" />
+
+        <Button
+            android:id="@+id/dislikeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center|end"
+            android:layout_marginEnd="16dp"
+            android:text="@string/dislike"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.49" />
+
+        <TextView
+            android:id="@+id/dislikeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom|end"
+            android:layout_marginBottom="24dp"
+            android:text="@string/dislikes"
+            android:textSize="10pt"
+            app:layout_constraintBottom_toTopOf="@+id/dislikeBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.646"
+            app:layout_constraintStart_toEndOf="@+id/viewStoryBackBtn" />
+
+        <Button
+            android:id="@+id/likeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center|start"
+            android:layout_marginStart="24dp"
+            android:text="@string/like"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.49" />
+
+        <TextView
+            android:id="@+id/likeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom|start"
+            android:layout_marginBottom="24dp"
+            android:text="@string/likes"
+            android:textSize="10pt"
+            app:layout_constraintBottom_toTopOf="@+id/likeBtn"
+            app:layout_constraintEnd_toStartOf="@+id/viewStoryBackBtn"
+            app:layout_constraintHorizontal_bias="0.401"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

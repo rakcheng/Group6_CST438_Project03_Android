@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import com.groupsix.project3_cst438.repository.StoriesRepository;
 import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
 
@@ -17,6 +18,14 @@ public class StoriesViewModel extends AndroidViewModel {
     public StoriesViewModel(Application application) {
         super(application);
         mStoriesRepo = StoriesRepository.getRepoInstance(application.getApplicationContext());
+    }
+
+    public LiveData<List<Stories>> getAllLocalByStory(Story story) {
+        return mStoriesRepo.getAllLocalStoriesByParent(story);
+    }
+
+    public LiveData<List<Stories>> getAllLocal() {
+        return mStoriesRepo.getAllLocalStoriesLiveData();
     }
 
     // Return value of livedata that isn't mutable (cannot change)
