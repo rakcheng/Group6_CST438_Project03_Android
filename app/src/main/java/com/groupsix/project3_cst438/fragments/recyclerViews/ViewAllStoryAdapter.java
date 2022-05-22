@@ -48,7 +48,7 @@ public class ViewAllStoryAdapter extends RecyclerView.Adapter<ViewAllStoryAdapte
         // Set text for text views here
         holder.storyName_textView.setText(mStoryList.get(position).getStoryName());
         holder.itemView.setId(mStoryList.get(position).getStoryId()); // Set item id to storyId
-        storyStatus = mStoryList.get(position).getOpen() ? "Open" : "Closed";
+        storyStatus = mStoryList.get(position).getIsOpen() ? "Open" : "Closed";
         holder.storyStatus_textView.setText(String.format("Status: %s", storyStatus));
     }
 
@@ -64,8 +64,8 @@ public class ViewAllStoryAdapter extends RecyclerView.Adapter<ViewAllStoryAdapte
         public ViewHolderClass(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
 
-            storyName_textView = (TextView) itemView.findViewById(R.id.storyNameTextViewRecycler);
-            storyStatus_textView = (TextView) itemView.findViewById(R.id.storyStatusTextView);
+            storyName_textView = itemView.findViewById(R.id.storyNameTextViewRecycler);
+            storyStatus_textView = itemView.findViewById(R.id.storyStatusTextView);
 
             // Make each item have an onclick listener
             itemView.setOnClickListener(view -> {

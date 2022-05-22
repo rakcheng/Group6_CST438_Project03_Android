@@ -47,7 +47,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     // Create single instance of database.
     public static AppDatabase getInstance(final Context context) {
-        if(dbInstance == null) {
+        if (dbInstance == null) {
             synchronized (LOCK) {
                 if(dbInstance == null) {
                     dbInstance = Room.databaseBuilder(context.getApplicationContext(),

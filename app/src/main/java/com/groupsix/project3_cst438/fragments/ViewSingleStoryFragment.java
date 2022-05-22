@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -18,7 +19,6 @@ import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewSingleStoryBinding;
 import com.groupsix.project3_cst438.fragments.recyclerViews.ViewStoryAdapter;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
-import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
 /**
@@ -29,11 +29,10 @@ public class ViewSingleStoryFragment extends Fragment {
     private StoryViewModel storyViewModel;
     private Story mStory;
 
-    int storyId;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = null;
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
     }
 
@@ -41,63 +40,60 @@ public class ViewSingleStoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        View view =  binding.getRoot();
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
-            storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
+            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
             // Story was previously stored in local database so use that instead of API
             mStory = storyViewModel.getLocalById(storyId);
+
+            // Recycler view setup
+            binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
+            binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
+
+            // Setup text views to display story data
+            binding.storyNameTextView.setText(mStory.getStoryName());
+            setLikesAndDislikes();
+
+            // Infinite like or dislikes, should have check to only limit to 1 like
+            binding.likeBtn.setOnClickListener(view1 -> {
+                mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
+                setLikesAndDislikes();
+            });
+
+            binding.dislikeBtn.setOnClickListener(view1 -> {
+                mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
+                setLikesAndDislikes();
+            });
+
+            // If user clicks back button take them home
+            binding.viewStoryBackBtn.setOnClickListener(view1 -> {
+                NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
+                controller.popBackStack();
+            });
+
+            // Hide button if story is closed or user is not creator of story
+            // TODO: Shared preferences get user and compare with user that created story
+            if (!mStory.getIsOpen()) {
+                binding.finishStoryBtn.setVisibility(View.GONE);
+            }
+
+            // If user clicks finish button mark story as completed
+            binding.finishStoryBtn.setOnClickListener(view1 -> {
+                mStory.setIsOpen(false);
+                storyViewModel.finishStoryExternal(mStory);
+                storyViewModel.updateLocal(mStory);
+                Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
+
+                // Now pop backstack. Pops current fragment (view single story)
+                NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
+                controller.popBackStack();
+                //controller.navigateUp();
+            });
         }
 
-        // Recycler view setup
-        binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
-
-        // Setup text views to display story data
-        binding.storyNameTextView.setText(mStory.getStoryName());
-        setLikesAndDislikes();
-
-        // Infinite like or dislikes, should have check to only limit to 1 like
-        binding.likeBtn.setOnClickListener(view1 -> {
-            mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
-            setLikesAndDislikes();
-        });
-
-        binding.dislikeBtn.setOnClickListener(view1 -> {
-            mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
-            setLikesAndDislikes();
-        });
-
-        // If user clicks back button take them home
-        binding.viewStoryBackBtn.setOnClickListener(view1 -> {
-            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-            controller.popBackStack();
-            // TODO: CHANGE THIS ITS WHATS CAUSING IT TO KEEP LIVEDATA STALE
-        });
-
-        // Hide button if story is closed or user is not creator of story
-        // TODO: Shared preferences get user and compare with user that created story
-        if (!mStory.getOpen()) {
-            binding.finishStoryBtn.setVisibility(View.GONE);
-        }
-
-        // If user clicks finish button mark story as completed
-        binding.finishStoryBtn.setOnClickListener(view1 -> {
-            mStory.setOpen(false);
-            storyViewModel.finishStoryExternal(mStory);
-            storyViewModel.updateLocal(mStory);
-            Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
-
-            // Now pop backstack. Pops current fragment (view single story)
-            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-            //controller.popBackStack();
-            controller.navigateUp();
-        });
+        return view;
     }
 
     private void setLikesAndDislikes() {

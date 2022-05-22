@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.Gson;
 import com.groupsix.project3_cst438.retrofit.RetrofitClient;
 import com.groupsix.project3_cst438.retrofit.StoriesResponse;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
@@ -14,6 +15,8 @@ import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -91,7 +94,11 @@ public class StoriesRepository {
     // ======================= REST API OPERATIONS ===========
 
     public void insertStories(Stories stories) {
-        mRetrofitClient.apiInterface.insertStories(stories.getUserId(), stories.getStory()).enqueue(new Callback<StoriesResponse>() {
+        Gson gson = new Gson();
+        String storyStr = gson.toJson(stories.getStoryParent());
+        RequestBody body = RequestBody.create(storyStr, MediaType.parse("application/json"));
+
+        mRetrofitClient.apiInterface.insertStories(stories.getUserId(), stories.getStory(), body).enqueue(new Callback<StoriesResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoriesResponse> call, @NonNull Response<StoriesResponse> response) {
                 if (response.isSuccessful()) {

@@ -12,8 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    //public static final String BASE_URL = "https://calm-ravine-21524.herokuapp.com/"; // Use heroku backend app
-    public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of local host for android emulator
+    public static final String BASE_URL = "https://calm-ravine-21524.herokuapp.com/"; // Use heroku backend app
+    //public static final String BASE_URL = "http://10.0.2.2:8080/"; // Using ip of local host for android emulator
 
     public ApiInterface apiInterface;
     private static RetrofitClient retrofitInstance;
@@ -27,6 +27,7 @@ public class RetrofitClient {
     public MutableLiveData<List<StoryLikesResponse>> storyLikesResponseList;
     public MutableLiveData<CommentResponse> commentResponse;
     public MutableLiveData<List<CommentResponse>> commentResponseList;
+    public MutableLiveData<StoryResponse> storyUpdatedResponse;
 
     public RetrofitClient(String BASE_URL) {
         OkHttpClient client = new OkHttpClient();
@@ -37,6 +38,7 @@ public class RetrofitClient {
         storiesResponseList = new MutableLiveData<>();
         storyLikesResponse = new MutableLiveData<>();
         storyLikesResponseList = new MutableLiveData<>();
+        storyUpdatedResponse = new MutableLiveData<>();
 
         apiInterface = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

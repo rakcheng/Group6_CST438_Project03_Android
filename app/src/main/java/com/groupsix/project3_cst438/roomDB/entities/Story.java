@@ -1,11 +1,9 @@
 package com.groupsix.project3_cst438.roomDB.entities;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.google.gson.annotations.SerializedName;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 
 import java.util.List;
@@ -19,36 +17,25 @@ public class Story {
     private String storyName;
     private Integer likes;
     private Integer dislikes;
-    private Boolean open;
+    private Boolean isOpen;
 
     private List<Stories> storyList;
 
-    @Ignore
-    public Story(Integer storyId, Integer userId, String storyName, Integer likes, Integer dislikes, boolean open, List<Stories> storyList) {
-        this.storyId = storyId;
+    public Story(Integer userId, String storyName, Integer likes, Integer dislikes, Boolean isOpen, List<Stories> storyList) {
         this.userId = userId;
         this.storyName = storyName;
         this.likes = likes;
         this.dislikes = dislikes;
-        this.open = open;
+        this.isOpen = isOpen;
         this.storyList = storyList;
     }
 
-    public Story(Integer userId, String storyName, List<Stories> storyList) {
-        this.userId = userId;
-        this.storyName = storyName;
-        this.storyList = storyList;
-        this.likes = 0;
-        this.dislikes = 0;
-        this.open = true;
+    public Boolean getIsOpen() {
+        return isOpen;
     }
 
-    public Boolean getOpen() {
-        return open;
-    }
-
-    public void setOpen(Boolean open) {
-        this.open = open;
+    public void setIsOpen(Boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
     public Integer getLikes() {
@@ -104,11 +91,11 @@ public class Story {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Story story = (Story) o;
-        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(likes, story.likes) && Objects.equals(dislikes, story.dislikes) && Objects.equals(open, story.open) && Objects.equals(storyList, story.storyList);
+        return Objects.equals(storyId, story.storyId) && Objects.equals(userId, story.userId) && Objects.equals(storyName, story.storyName) && Objects.equals(likes, story.likes) && Objects.equals(dislikes, story.dislikes) && Objects.equals(isOpen, story.isOpen) && Objects.equals(storyList, story.storyList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storyId, userId, storyName, likes, dislikes, open, storyList);
+        return Objects.hash(storyId, userId, storyName, likes, dislikes, isOpen, storyList);
     }
 }

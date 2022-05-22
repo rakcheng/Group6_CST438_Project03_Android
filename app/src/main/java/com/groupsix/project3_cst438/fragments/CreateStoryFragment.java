@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -24,6 +23,7 @@ import com.groupsix.project3_cst438.roomDB.entities.StoryLikes;
 import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public class CreateStoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Owner of view model lifecycle is fragment
+        binding = null;
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
         storiesViewModel = new ViewModelProvider(this).get(StoriesViewModel.class);
     }
@@ -62,54 +62,72 @@ public class CreateStoryFragment extends Fragment {
         View view = binding.getRoot();
 
         binding.createStoryBtn.setOnClickListener(view1 -> {
+            view1.setOnClickListener(null); // Prevent multiple clicks
+            System.out.println("Clicked create story Button");
+
+            // 1. Create the story first.
+            // 2. Insert into backend database
+            // 3. Observe live data for changes
+            // 4. Get updated storyId from response
+            // 5. Create stories object and use story as parent of it.
+            // 6. Insert stories into backend database
+            // 7. Update story in backend database
+
+            List<Stories> storyList = new ArrayList<>();
+            // TODO: Replace with shared preferences user Id
+            Story story =  new Story(2, "empty",0 ,0 ,true, storyList);
+            // Create story first, null object
             if (getInputFields()) {
-                // Prevent multiple clicks to create story
-                view1.setOnClickListener(null);
-                // TODO: Replace with shared preferences user Id
-                Stories stories = new Stories(2, mInitialStory);
-                storiesViewModel.insertExternal(stories);
+                story.setStoryName(mStoryName);
+                storyViewModel.insertExternal(story); // Insert story to get its ID
             }
 
+            storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
+                System.out.println("New story was inserted and livedata observed");
+                Stories stories =  new Stories(2, mInitialStory, storyResponse.getStory());
+                story.setStoryId(storyResponse.getStoryId());
+                storiesViewModel.insertExternal(stories);
+            });
+
             storiesViewModel.getStoriesResponseLiveData().observe(getViewLifecycleOwner(), storiesResponse -> {
-                System.out.println("Stories livedata has been observed!");
-
-                // Stories now has updated storiesId from external database
-                List<Stories> storyList = new ArrayList<>();
+                System.out.println("New stories was inserted and observed");
                 storyList.add(storiesResponse.getStory());
+                story.setStoryList(storyList);
+                storyViewModel.updateExternalStoriesList(story);
+            });
 
-                Story story = new Story(2, mStoryName, storyList);
+            storyViewModel.getStoryResponseUpdated().observe(getViewLifecycleOwner(), storyResponse1 -> {
+                System.out.println("Previously created story was updated and observed");
+                Toast.makeText(getActivity(), "Story created successfully", Toast.LENGTH_SHORT).show();
+                binding.initialStoryEditText.setText("");
+                binding.storyNameEditText.setText("");
 
-                // Once other endpoints are done check if it already exists in local/backend database
-                storyViewModel.insertExternal(story);
+                assert storyResponse1 != null;
+                storyViewModel.insertLocal(storyResponse1.getStory());
 
-                // Pass storyId argument to fragment once story live data changes
-                storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
-                    Toast.makeText(getActivity(), "Story created successfully", Toast.LENGTH_SHORT).show();
-                    binding.initialStoryEditText.setText("");
-                    binding.storyNameEditText.setText("");
-                    storyViewModel.insertLocal(storyResponse.getStory());
+                // TODO: Check if it exists already. One entry per user per story
+                StoryLikes storyLikes = new StoryLikes(storyResponse1.getStoryId(), storyResponse1.getUserId(), false, false);
+                storyViewModel.insertLikesEntryExternal(storyLikes);
+            });
 
-                    // Insert story likes table that checks if user has liked/disliked a story or not
-                    StoryLikes storyLikes = new StoryLikes(storyResponse.getStoryId(), storyResponse.getUserId(), false, false);
-                    storyViewModel.insertLikesEntryExternal(storyLikes);
+            storyViewModel.getStoryLikesResponseLiveData().observe(getViewLifecycleOwner(), storyLikesResponse -> {
+                System.out.println("New likes entry was inserted and observed");
+                // TODO: Check if it already exists in room database if so update it if not insert it
+                storyViewModel.insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
 
-                    storyViewModel.getStoryLikesResponseLiveData().observe(getViewLifecycleOwner(), storyLikesResponse -> {
-                        storyViewModel.insertLocalLikesEntry(storyLikesResponse.getStoryLikesObject());
-                        System.out.println("Story likes entry inserted in room db");
-                        // Pass safe args (storyId)
-                        NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(storyResponse.getStoryId());
-                        NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
-                    });
-                });
+                // Now navigate to fragment where you can view it (Stopped working)
+                //System.out.println("Navigating to Viewing single story fragment Current ID is: " + story.getStoryId());
+                //NavDirections action = CreateStoryFragmentDirections.actionCreateStoryFragmentToViewSingleStoryFragment().setStoryId(story.getStoryId());
+                //NavHostFragment.findNavController(CreateStoryFragment.this).navigate(action);
+                NavHostFragment.findNavController(CreateStoryFragment.this).popBackStack(R.id.createStoryFragment, false);
             });
         });
-
         return view;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         binding = null;
     }
 

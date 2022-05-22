@@ -5,6 +5,7 @@ import androidx.room.TypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,5 +44,15 @@ public class CustomTypeConverters {
         return new Gson().fromJson(jsonStr, listType);
     }
 
+    @TypeConverter
+    public static String stringFromStory(Story story) {
+        Gson gson = new Gson();
+        return gson.toJson(story);
+    }
 
+    @TypeConverter
+    public static Story JSONStoryToStory(String jsonStr) {
+        Type type = new TypeToken<Story>() {}.getType();
+        return new Gson().fromJson(jsonStr, type);
+    }
 }

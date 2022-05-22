@@ -35,6 +35,7 @@ public class StoryRepository {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mStoryDao = mRoomDb.getStoryDAO();
+        //updateRoomDBFromExternal();
     }
 
     public static StoryRepository getRepoInstance(Context context) {
@@ -48,11 +49,10 @@ public class StoryRepository {
     public LiveData<List<Story>> getAllStoryLocal() { return mStoryDao.getAll(); }
 
     // Livedata to check response from API
-    public void resetStoryResponse() {
-        mRetrofitClient.storyResponse.setValue(null);
-    }
     public LiveData<StoryResponse> getStoryResponse() { return mRetrofitClient.storyResponse; }
     public LiveData<List<StoryResponse>> getStoryListResponse() { return mRetrofitClient.storyResponseList; }
+    public LiveData<StoryResponse> getStoryUpdatedResponse() { return mRetrofitClient.storyUpdatedResponse; }
+
 
     // USE THIS TO UPDATE FROM EXTERNAL API WHEN APP STARTS
     public void updateRoomDBFromExternal() {
@@ -152,6 +152,29 @@ public class StoryRepository {
         });
     }
 
+    public void updateStoryList(Story story) {
+        // List of stories body
+        Gson gson = new Gson();
+        String strList = gson.toJson(story.getStoryList());
+        RequestBody body = RequestBody.create(strList, MediaType.parse("application/json"));
+
+        mRetrofitClient.apiInterface.updateStoryList(story.getStoryId(), body).enqueue(new Callback<StoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
+                if(response.isSuccessful()) {
+                    System.out.println("Story stories list updated successfully");
+                    mRetrofitClient.storyUpdatedResponse.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StoryResponse> call, @NonNull Throwable t) {
+                mRetrofitClient.storyUpdatedResponse.postValue(null);
+                System.out.println("Error" + t.getMessage());
+            }
+        });
+    }
+
     public void updateStoryLikesCount(Story story) {
         mRetrofitClient.apiInterface.updateStoryLikes(story.getStoryId(), story.getLikes()).enqueue(new Callback<StoryResponse>() {
             @Override
@@ -188,7 +211,7 @@ public class StoryRepository {
     }
 
     public void finishStory(Story story) {
-        mRetrofitClient.apiInterface.updateStoryIsOpen(story.getStoryId(), story.getOpen()).enqueue(new Callback<StoryResponse>() {
+        mRetrofitClient.apiInterface.updateStoryIsOpen(story.getStoryId(), story.getIsOpen()).enqueue(new Callback<StoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<StoryResponse> call, @NonNull Response<StoryResponse> response) {
                 if(response.isSuccessful()) {
