@@ -34,6 +34,13 @@ public class ViewSingleStoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         binding = null;
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
+
+        // Get fragment safe args - in this case storyId
+        if (getArguments() != null) {
+            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
+            // Story was previously stored in local database so use that instead of API
+            mStory = storyViewModel.getLocalById(storyId);
+        }
     }
 
     @Override
@@ -42,56 +49,49 @@ public class ViewSingleStoryFragment extends Fragment {
         binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
         View view =  binding.getRoot();
 
-        // Get fragment safe args - in this case storyId
-        if (getArguments() != null) {
-            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
-            // Story was previously stored in local database so use that instead of API
-            mStory = storyViewModel.getLocalById(storyId);
+        // Recycler view setup
+        binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
 
-            // Recycler view setup
-            binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
+        // Setup text views to display story data
+        binding.storyNameTextView.setText(mStory.getStoryName());
+        setLikesAndDislikes();
 
-            // Setup text views to display story data
-            binding.storyNameTextView.setText(mStory.getStoryName());
+        // Infinite like or dislikes, should have check to only limit to 1 like
+        binding.likeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
             setLikesAndDislikes();
+        });
 
-            // Infinite like or dislikes, should have check to only limit to 1 like
-            binding.likeBtn.setOnClickListener(view1 -> {
-                mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
-                setLikesAndDislikes();
-            });
+        binding.dislikeBtn.setOnClickListener(view1 -> {
+            mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
+            setLikesAndDislikes();
+        });
 
-            binding.dislikeBtn.setOnClickListener(view1 -> {
-                mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
-                setLikesAndDislikes();
-            });
+        // If user clicks back button take them home
+        binding.viewStoryBackBtn.setOnClickListener(view1 -> {
+            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
+            controller.popBackStack();
+        });
 
-            // If user clicks back button take them home
-            binding.viewStoryBackBtn.setOnClickListener(view1 -> {
-                NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-                controller.popBackStack();
-            });
-
-            // Hide button if story is closed or user is not creator of story
-            // TODO: Shared preferences get user and compare with user that created story
-            if (!mStory.getIsOpen()) {
-                binding.finishStoryBtn.setVisibility(View.GONE);
-            }
-
-            // If user clicks finish button mark story as completed
-            binding.finishStoryBtn.setOnClickListener(view1 -> {
-                mStory.setIsOpen(false);
-                storyViewModel.finishStoryExternal(mStory);
-                storyViewModel.updateLocal(mStory);
-                Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
-
-                // Now pop backstack. Pops current fragment (view single story)
-                NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
-                controller.popBackStack();
-                //controller.navigateUp();
-            });
+        // Hide button if story is closed or user is not creator of story
+        // TODO: Shared preferences get user and compare with user that created story
+        if (!mStory.getIsOpen()) {
+            binding.finishStoryBtn.setVisibility(View.GONE);
         }
+
+        // If user clicks finish button mark story as completed
+        binding.finishStoryBtn.setOnClickListener(view1 -> {
+            mStory.setIsOpen(false);
+            storyViewModel.finishStoryExternal(mStory);
+            storyViewModel.updateLocal(mStory);
+            Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
+
+            // Now pop backstack. Pops current fragment (view single story)
+            NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
+            controller.popBackStack();
+            //controller.navigateUp();
+        });
 
         return view;
     }
