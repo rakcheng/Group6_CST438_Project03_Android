@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -28,8 +29,6 @@ public class ViewSingleStoryFragment extends Fragment {
     private StoryViewModel storyViewModel;
     private Story mStory;
 
-    int storyId;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +37,7 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
-            storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
+            int storyId = ViewSingleStoryFragmentArgs.fromBundle(getArguments()).getStoryId();
             // Story was previously stored in local database so use that instead of API
             mStory = storyViewModel.getLocalById(storyId);
         }
@@ -48,7 +47,7 @@ public class ViewSingleStoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+        View view =  binding.getRoot();
 
         // Recycler view setup
         binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -56,20 +55,17 @@ public class ViewSingleStoryFragment extends Fragment {
 
         // Setup text views to display story data
         binding.storyNameTextView.setText(mStory.getStoryName());
-        binding.likeTextView.setText(mStory.getLikes().toString());
-        binding.dislikeTextView.setText(mStory.getDislikes().toString());
+        setLikesAndDislikes();
 
         // Infinite like or dislikes, should have check to only limit to 1 like
         binding.likeBtn.setOnClickListener(view1 -> {
             mStory = storyViewModel.updateLikesAndDislikes(mStory, true, false);
-            binding.likeTextView.setText(mStory.getLikes().toString());
-            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+            setLikesAndDislikes();
         });
 
         binding.dislikeBtn.setOnClickListener(view1 -> {
             mStory = storyViewModel.updateLikesAndDislikes(mStory, false, true);
-            binding.likeTextView.setText(mStory.getLikes().toString());
-            binding.dislikeTextView.setText(mStory.getDislikes().toString());
+            setLikesAndDislikes();
         });
 
         // If user clicks back button take them home
@@ -78,9 +74,15 @@ public class ViewSingleStoryFragment extends Fragment {
             controller.popBackStack();
         });
 
+        // Hide button if story is closed or user is not creator of story
+        // TODO: Shared preferences get user and compare with user that created story
+        if (!mStory.getIsOpen()) {
+            binding.finishStoryBtn.setVisibility(View.GONE);
+        }
+
         // If user clicks finish button mark story as completed
         binding.finishStoryBtn.setOnClickListener(view1 -> {
-            mStory.setOpen(false);
+            mStory.setIsOpen(false);
             storyViewModel.finishStoryExternal(mStory);
             storyViewModel.updateLocal(mStory);
             Toast.makeText(getActivity(), "Story closed successfully", Toast.LENGTH_SHORT).show();
@@ -88,9 +90,15 @@ public class ViewSingleStoryFragment extends Fragment {
             // Now pop backstack. Pops current fragment (view single story)
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
+            //controller.navigateUp();
         });
 
         return view;
+    }
+
+    private void setLikesAndDislikes() {
+        binding.likeTextView.setText(String.format("%s", mStory.getLikes().toString()));
+        binding.dislikeTextView.setText(String.format("%s", mStory.getDislikes().toString()));
     }
 
     @Override

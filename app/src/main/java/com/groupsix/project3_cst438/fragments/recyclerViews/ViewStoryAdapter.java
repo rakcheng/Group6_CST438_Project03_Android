@@ -46,7 +46,7 @@ public class ViewStoryAdapter extends RecyclerView.Adapter<ViewStoryAdapter.View
     }
 
     public static class ViewHolderClass extends RecyclerView.ViewHolder {
-        private TextView story_textView;
+        private final TextView story_textView;
 
         public ViewHolderClass(@NonNull View storyView) {
             super(storyView);

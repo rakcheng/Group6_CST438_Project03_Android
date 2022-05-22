@@ -35,7 +35,8 @@ public class StoryResponse {
     public Integer getUserId() { return userId; }
 
     public Story getStory() {
-        return new Story(storyId, userId, storyName, likes, dislikes, isOpen, storiesList);
+        Story story = new Story(userId, storyName, likes, dislikes, isOpen, storiesList);
+        story.setStoryId(storyId);
+        return story;
     }
-
 }

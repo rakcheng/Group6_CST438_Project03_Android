@@ -6,7 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.groupsix.project3_cst438.repository.AppRepository;
+import com.groupsix.project3_cst438.repository.StoryLikesRepository;
+import com.groupsix.project3_cst438.repository.StoryRepository;
 import com.groupsix.project3_cst438.retrofit.StoryLikesResponse;
 import com.groupsix.project3_cst438.retrofit.StoryResponse;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
@@ -15,58 +16,66 @@ import com.groupsix.project3_cst438.roomDB.entities.StoryLikes;
 import java.util.List;
 
 public class StoryViewModel extends AndroidViewModel {
-    private AppRepository mRepository;
+    private final StoryRepository mStoryRepo;
+    private final StoryLikesRepository mStoryLikesRepo;
 
     public StoryViewModel(@NonNull Application application) {
         super(application);
-        mRepository = AppRepository.getRepoInstance(application.getApplicationContext());
+        mStoryRepo = StoryRepository.getRepoInstance(application.getApplicationContext());
+        mStoryLikesRepo = StoryLikesRepository.getRepoInstance(application.getApplicationContext());
     }
 
-    public void insertLocal(Story story) { mRepository.insertLocalStory(story);}
-    public void insertExternal(Story story) { mRepository.insertStory(story);}
-
-    public void updateLocal(Story story) { mRepository.updateLocalStory(story);}
-    public void updateLikesCount(Story story) { mRepository.updateStoryLikesCount(story); }
-    public void updateDislikesCount(Story story) { mRepository.updateStoryDislikesCount(story); }
-    public void finishStoryExternal(Story story) { mRepository.finishStory(story); }
-
-    public void deleteLocal(Story story) { mRepository.deleteLocalStory(story);}
-
-    public Story getLocalById(int storyId) { return mRepository.getLocalStoryById(storyId); }
-    public Story getLocalByUserId(int userId) { return mRepository.getLocalStoryByUserId(userId); }
-    public Story getLocalByName(String storyName) { return mRepository.getLocalStoryByName(storyName); }
-
+    // ============ GET LIVE DATA ===============
+    public LiveData<StoryResponse> getStoryResponseLiveData() {
+        return mStoryRepo.getStoryResponse();
+    }
+    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() {
+        return mStoryRepo.getStoryListResponse();
+    }
+    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() {
+        return mStoryLikesRepo.getStoryLikesResponseLiveData();
+    }
     public LiveData<List<Story>> getAllLocal() {
-        return mRepository.getAllLocalStoryLiveData();
+        return mStoryRepo.getAllStoryLocal();
     }
 
-    public StoryLikes getLocalStoryLikesByStoryIdAndUserId(int storyId, int userId) { return mRepository.getLocalLikesByStoryIdAndUserId(storyId, userId); }
+    public LiveData<StoryResponse> getStoryResponseUpdated() {
+        return mStoryRepo.getStoryUpdatedResponse();
+    }
+    // ==========================================
 
+    public void insertLocal(Story story) { mStoryRepo.insertLocalStory(story);}
+    public void insertExternal(Story story) { mStoryRepo.insertStory(story);}
 
-    // This will trigger livedata to change. Get livedata list
+    public void updateLocal(Story story) { mStoryRepo.updateLocalStory(story);}
+    public void updateLikesCount(Story story) { mStoryRepo.updateStoryLikesCount(story); }
+    public void updateDislikesCount(Story story) { mStoryRepo.updateStoryDislikesCount(story); }
+    public void finishStoryExternal(Story story) { mStoryRepo.finishStory(story); }
+    public void deleteLocal(Story story) { mStoryRepo.deleteLocalStory(story);}
+
+    public Story getLocalById(int storyId) { return mStoryRepo.getLocalStoryById(storyId); }
+    public Story getLocalByUserId(int userId) { return mStoryRepo.getLocalStoryByUserId(userId); }
+    public Story getLocalByName(String storyName) { return mStoryRepo.getLocalStoryByName(storyName); }
+
+    public StoryLikes getLocalStoryLikesByStoryIdAndUserId(int storyId, int userId) { return mStoryLikesRepo.getLocalLikesByStoryIdAndUserId(storyId, userId); }
+
+    public void updateExternalStoriesList(Story story) { mStoryRepo.updateStoryList(story); }
+
     public void getAllStory() {
-        mRepository.getAllStory();
+        mStoryRepo.getAllStory();
     }
-
     public void getAllOpenStory() {
-        mRepository.getAllOpenStory();
+        mStoryRepo.getAllOpenStory();
     }
-
     public void getAllClosedStory() {
-        mRepository.getAllClosedStory();
+        mStoryRepo.getAllClosedStory();
     }
 
-    public LiveData<List<StoryResponse>> getStoryListResponseLiveData() { return mRepository.getStoryListResponseLiveData(); }
-
-    public LiveData<StoryResponse> getStoryResponseLiveData() { return mRepository.getStoryResponseLiveData(); }
-
-    public LiveData<StoryLikesResponse> getStoryLikesResponseLiveData() { return mRepository.getStoryLikesResponseLiveData(); }
-
-    public void insertLikesEntryExternal(StoryLikes storyLikes) { mRepository.insertLikesEntry(storyLikes);}
-    public void insertLocalLikesEntry(StoryLikes storyLikes) { mRepository.insertLocalLikesEntry(storyLikes);}
-    public void updateStoryIsLiked(StoryLikes storyLikes) { mRepository.updateStoryLikesIsLiked(storyLikes); }
-    public void updateStoryIsDisliked(StoryLikes storyLikes) { mRepository.updateStoryLikesIsDisliked(storyLikes); }
-    public void updateLocalStoryLikesEntry(StoryLikes storyLikes) { mRepository.updateLocalLikesEntry(storyLikes);}
+    public void insertLikesEntryExternal(StoryLikes storyLikes) { mStoryLikesRepo.insertLikesEntry(storyLikes);}
+    public void insertLocalLikesEntry(StoryLikes storyLikes) { mStoryLikesRepo.insertLocalLikesEntry(storyLikes);}
+    public void updateStoryIsLiked(StoryLikes storyLikes) { mStoryLikesRepo.updateStoryLikesIsLiked(storyLikes); }
+    public void updateStoryIsDisliked(StoryLikes storyLikes) { mStoryLikesRepo.updateStoryLikesIsDisliked(storyLikes); }
+    public void updateLocalStoryLikesEntry(StoryLikes storyLikes) { mStoryLikesRepo.updateLocalLikesEntry(storyLikes);}
 
     public Story updateLikesAndDislikes(Story story, boolean isLike, boolean isDislike) {
         // Get likes entry belonging to this story. Use it to check if story has been liked/disliked by user

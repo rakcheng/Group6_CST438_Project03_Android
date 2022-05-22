@@ -1,11 +1,9 @@
 package com.groupsix.project3_cst438.roomDB.entities;
 
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.google.gson.annotations.SerializedName;
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 
 import java.util.List;
@@ -23,9 +21,7 @@ public class Story {
 
     private List<Stories> storyList;
 
-    @Ignore
-    public Story(Integer storyId, Integer userId, String storyName, Integer likes, Integer dislikes, boolean isOpen, List<Stories> storyList) {
-        this.storyId = storyId;
+    public Story(Integer userId, String storyName, Integer likes, Integer dislikes, Boolean isOpen, List<Stories> storyList) {
         this.userId = userId;
         this.storyName = storyName;
         this.likes = likes;
@@ -34,13 +30,12 @@ public class Story {
         this.storyList = storyList;
     }
 
-    public Story(Integer userId, String storyName, List<Stories> storyList) {
-        this.userId = userId;
-        this.storyName = storyName;
-        this.storyList = storyList;
-        this.likes = 0;
-        this.dislikes = 0;
-        this.isOpen = true;
+    public Boolean getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(Boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
     public Integer getLikes() {
@@ -57,14 +52,6 @@ public class Story {
 
     public void setDislikes(Integer dislikes) {
         this.dislikes = dislikes;
-    }
-
-    public Boolean getOpen() {
-        return isOpen;
-    }
-
-    public void setOpen(Boolean open) {
-        isOpen = open;
     }
 
     public Integer getStoryId() {
