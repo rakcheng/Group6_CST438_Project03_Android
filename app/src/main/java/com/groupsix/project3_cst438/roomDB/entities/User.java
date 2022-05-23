@@ -1,6 +1,7 @@
 package com.groupsix.project3_cst438.roomDB.entities;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
@@ -15,6 +16,14 @@ public class User {
     private String username;
     private String password;
     private boolean admin;
+
+    @Ignore
+    public User(Integer userId, String username, String password, boolean isAdmin) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.admin = isAdmin;
+    }
 
     public User(String username, String password, boolean admin) {
         this.username = username;

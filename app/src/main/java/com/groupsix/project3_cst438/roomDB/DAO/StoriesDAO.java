@@ -10,6 +10,7 @@ import androidx.room.Update;
 
 import com.groupsix.project3_cst438.roomDB.AppDatabase;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
+import com.groupsix.project3_cst438.roomDB.entities.Story;
 
 import java.util.List;
 
@@ -32,4 +33,7 @@ public interface StoriesDAO {
 
     @Query("SELECT * FROM " + AppDatabase.STORIES_TABLE)
     LiveData<List<Stories>> getAll();
+
+    @Query("SELECT * FROM " + AppDatabase.STORIES_TABLE + " WHERE parentId = :parentId")
+    LiveData<List<Stories>> getAllBelongingToStory(Integer parentId);
 }

@@ -9,17 +9,27 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.databinding.FragmentViewSingleStoryBinding;
+import com.groupsix.project3_cst438.fragments.recyclerViews.ViewAllStoryAdapter;
 import com.groupsix.project3_cst438.fragments.recyclerViews.ViewStoryAdapter;
+import com.groupsix.project3_cst438.roomDB.entities.Stories;
 import com.groupsix.project3_cst438.roomDB.entities.Story;
+import com.groupsix.project3_cst438.viewmodels.StoriesViewModel;
 import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  *  View a single story and its list of stories from this fragment
@@ -27,6 +37,7 @@ import com.groupsix.project3_cst438.viewmodels.StoryViewModel;
 public class ViewSingleStoryFragment extends Fragment {
     private FragmentViewSingleStoryBinding binding;
     private StoryViewModel storyViewModel;
+    private StoriesViewModel storiesViewModel;
     private Story mStory;
 
     @Override
@@ -34,6 +45,7 @@ public class ViewSingleStoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         binding = null;
         storyViewModel = new ViewModelProvider(this).get(StoryViewModel.class);
+        storiesViewModel = new ViewModelProvider(this).get(StoriesViewModel.class);
 
         // Get fragment safe args - in this case storyId
         if (getArguments() != null) {
@@ -49,9 +61,17 @@ public class ViewSingleStoryFragment extends Fragment {
         binding = FragmentViewSingleStoryBinding.inflate(inflater, container, false);
         View view =  binding.getRoot();
 
-        // Recycler view setup
         binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory));
+        binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), mStory.getStoryList()));
+
+        binding.addStoriesBtn.setOnClickListener(view12 -> {
+            String sentence = Objects.requireNonNull(binding.addToStoryEditText.getText()).toString();
+            if (sentence.isEmpty()) {
+                Toast.makeText(getActivity(), "Enter a sentence!", Toast.LENGTH_SHORT).show();
+            } else {
+                addToStory(sentence);
+            }
+        });
 
         // Setup text views to display story data
         binding.storyNameTextView.setText(mStory.getStoryName());
@@ -90,10 +110,46 @@ public class ViewSingleStoryFragment extends Fragment {
             // Now pop backstack. Pops current fragment (view single story)
             NavController controller = NavHostFragment.findNavController(ViewSingleStoryFragment.this);
             controller.popBackStack();
-            //controller.navigateUp();
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        // Update recyclerview whenever a story is added
+        storiesViewModel.getAllLocalByStory(mStory).observe(getViewLifecycleOwner(), storiesList -> {
+            binding.recyclerSingleStoryStories.setLayoutManager(new LinearLayoutManager(getActivity()));
+            binding.recyclerSingleStoryStories.setAdapter(new ViewStoryAdapter(getContext(), storiesList));
+        });
+
+        // Refresh with swipe
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            binding.recyclerSingleStoryStories.getAdapter().notifyDataSetChanged();
+            binding.swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    private void addToStory(String sentence) {
+        List<Stories> storiesList = mStory.getStoryList();
+        // TODO : Update userId once login is finished
+        Stories stories = new Stories(1, sentence, mStory, mStory.getStoryId());
+        // Insert new stories object into db
+        storiesViewModel.insertExternal(stories);
+        storiesViewModel.getStoriesResponseLiveData().observe(getViewLifecycleOwner(), storiesResponse -> {
+            Stories stories1 = storiesResponse.getStory();
+            stories1.setParentId(mStory.getStoryId());
+            storiesList.add(stories1);
+            storiesViewModel.insertLocal(stories1);
+        });
+        mStory.setStoryList(storiesList);
+        storyViewModel.updateExternalStoriesList(mStory);
+
+        storyViewModel.getStoryResponseUpdated().observe(getViewLifecycleOwner(), storyResponse -> {
+            Toast.makeText(getActivity(), "Stories added successfully", Toast.LENGTH_SHORT).show();
+            mStory = storyResponse.getStory();
+            storyViewModel.updateLocal(mStory);
+        });
     }
 
     private void setLikesAndDislikes() {

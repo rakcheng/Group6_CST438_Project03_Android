@@ -1,5 +1,6 @@
 package com.groupsix.project3_cst438.retrofit;
 
+import com.groupsix.project3_cst438.R;
 import com.groupsix.project3_cst438.roomDB.entities.Stories;
 
 import org.json.JSONObject;
@@ -85,5 +86,14 @@ public interface ApiInterface {
 
     @PATCH("api/likes/isdisliked")
     Call<StoryLikesResponse> updateStoryIsDisliked(@Query("likesId") int likesId, @Query("isDisliked") boolean isDisliked);
+
+    @POST
+    Call<UserResponse> insertUser (@Query("username") String username, @Query("password") String password, @Query("isAdmin") boolean isAdmin);
+
+    @GET("api/user")
+    Call<UserResponse> getUserByName(@Query("username") String username);
+
+    @GET("api/user")
+    Call<UserResponse> getUserById(@Query("userId") Integer userId);
 
 }

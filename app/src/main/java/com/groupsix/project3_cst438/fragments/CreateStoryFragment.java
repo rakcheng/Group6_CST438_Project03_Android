@@ -84,7 +84,7 @@ public class CreateStoryFragment extends Fragment {
 
             storyViewModel.getStoryResponseLiveData().observe(getViewLifecycleOwner(), storyResponse -> {
                 System.out.println("New story was inserted and livedata observed");
-                Stories stories =  new Stories(2, mInitialStory, storyResponse.getStory());
+                Stories stories =  new Stories(2, mInitialStory, storyResponse.getStory(), storyResponse.getStoryId());
                 story.setStoryId(storyResponse.getStoryId());
                 storiesViewModel.insertExternal(stories);
             });

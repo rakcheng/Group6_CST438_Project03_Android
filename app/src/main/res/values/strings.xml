@@ -36,4 +36,5 @@
     <string name="dislikes">dislikes</string>
     <string name="likes">likes</string>
     <string name="status_open">Status: Open</string>
+    <string name="add_to_current_story">Add to current story</string>
 </resources>

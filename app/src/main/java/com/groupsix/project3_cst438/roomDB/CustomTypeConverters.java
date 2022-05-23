@@ -17,7 +17,7 @@ public class CustomTypeConverters {
 
     @TypeConverter
     public static List<Integer> stringToList(String stringId) {
-        if(stringId == null) {
+        if (stringId == null) {
             return Collections.emptyList();
         }
 

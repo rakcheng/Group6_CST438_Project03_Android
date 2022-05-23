@@ -8,7 +8,6 @@
     android:id="@+id/fragment_container_view_new_story"
     >
 
-
     <Button
         android:id="@+id/createStoryBtn"
         android:layout_width="wrap_content"
@@ -20,22 +19,33 @@
         app:layout_constraintTop_toBottomOf="@+id/initialStoryEditText" />
 
     <com.google.android.material.textfield.TextInputEditText
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/storyNameEditText"
-        android:layout_width="273dp"
+        android:layout_width="350dp"
         android:layout_height="57dp"
         android:layout_marginTop="116dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="50dp"
+        android:textAlignment="textStart"
         android:hint="@string/story_name1"
+        android:background="@drawable/rounded_corner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputEditText
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/initialStoryEditText"
-        android:layout_width="331dp"
+        android:layout_width="350dp"
         android:layout_height="110dp"
         android:layout_marginTop="48dp"
         android:inputType="textMultiLine"
         android:lines="3"
+        android:paddingStart="20dp"
+        android:paddingEnd="50dp"
+
+        android:textAlignment="textStart"
+        android:background="@drawable/rounded_corner"
         android:hint="@string/first_sentence"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
