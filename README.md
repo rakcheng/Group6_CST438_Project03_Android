@@ -19,6 +19,7 @@ This is a web based "story time" application using modern web frameworks. This w
 - [How to interact with REST APIs from JavaScript](https://blog.teclado.com/how-to-interact-with-rest-apis-from-javascript/)
 - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
 - [Generating Code Snippets on Postman API](https://learning.postman.com/docs/sending-requests/generate-code-snippets/)
+- [Integrating Google Sign-In](https://developers.google.com/identity/sign-in/android/start-integrating)
 
 ## Entity Relationship Diagram(s)
 ![image](https://user-images.githubusercontent.com/10646650/162261351-ffe7e6cf-ac44-474d-812a-5f8ad5578b7c.png)
