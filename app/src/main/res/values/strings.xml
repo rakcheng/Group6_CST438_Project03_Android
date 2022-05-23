@@ -37,4 +37,19 @@
     <string name="likes">likes</string>
     <string name="status_open">Status: Open</string>
     <string name="add_to_current_story">Add to current story</string>
+    <string name="password1">Password</string>
+    <string name="re_enter_password">Re-enter Password</string>
+    <string name="username1">Username</string>
+    <string name="username2">Username</string>
+    <string name="storytime_io">Storytime.io</string>
+    <string name="logout">Logout</string>
+    <string name="todo">TODO</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="admin">Admin</string>
+    <string name="username3">Username</string>
+    <string name="password2">Password</string>
+    <string name="storytime_io1">Storytime.io</string>
+    <string name="todo1">TODO</string>
+    <string name="username12">Username</string>
+    <string name="login2">Login</string>
 </resources>

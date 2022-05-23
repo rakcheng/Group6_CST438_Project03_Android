@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.Login"
+    tools:context=".fragments.LoginFragment"
     >
 
     <ImageView
@@ -14,52 +14,81 @@
         android:layout_height="136dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="38dp"
         android:layout_marginEnd="146dp"
-        android:src="@drawable/ic_baseline_menu_book_24" />
+        android:src="@drawable/ic_baseline_menu_book_24"
+        android:contentDescription="@string/todo1" />
 
     <EditText
         android:id="@+id/editTextTextPersonName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="349dp"
-        android:hint="Username"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="101dp"
+        android:layout_marginTop="283dp"
+        android:layout_marginEnd="101dp"
+        android:autofillHints=""
         android:drawableLeft="@drawable/ic_baseline_adb"
         android:ems="10"
+        android:hint="@string/username3"
         android:inputType="textPersonName"
-        android:text="Username" />
+        android:minHeight="48dp"
+        android:text="@string/username12" />
 
     <EditText
         android:id="@+id/editTextTextPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="101dp"
+        android:layout_marginTop="346dp"
+        android:layout_marginEnd="101dp"
+        android:autofillHints=""
         android:drawableLeft="@drawable/ic_baseline_lock"
-        android:layout_marginTop="432dp"
-        android:hint="Password"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:hint="@string/password2"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="513dp"
-        android:text="Login" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="159dp"
+        android:layout_marginTop="418dp"
+        android:layout_marginEnd="164dp"
+        android:text="@string/login2" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="270dp"
-        android:text="Storytime.io"
-        android:textSize="35dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="213dp"
+        android:layout_marginEnd="109dp"
+        android:text="@string/storytime_io1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="35sp" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/googleSignInBtn"
+        android:layout_width="202dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="105dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="103dp"
+        app:buttonSize="wide" />
 </RelativeLayout>

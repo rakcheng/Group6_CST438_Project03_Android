@@ -35,7 +35,7 @@ public class StoryRepository {
         mRetrofitClient = RetrofitClient.getInstance(context);
         mRoomDb = AppDatabase.getInstance(context);
         mStoryDao = mRoomDb.getStoryDAO();
-        //updateRoomDBFromExternal();
+        updateRoomDBFromExternal();
     }
 
     public static StoryRepository getRepoInstance(Context context) {

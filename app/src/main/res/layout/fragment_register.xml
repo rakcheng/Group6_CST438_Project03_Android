@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.RegisterFragment"
-    >
+    tools:context=".fragments.RegisterFragment">
 
 
     <ImageView
@@ -17,7 +14,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="104dp"
         android:layout_marginEnd="146dp"
-        android:src="@drawable/ic_baseline_menu_book_24" />
+        android:src="@drawable/ic_baseline_menu_book_24"
+        android:contentDescription="@string/todo" />
 
     <TextView
         android:id="@+id/textView"
@@ -26,8 +24,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="270dp"
-        android:text="Storytime.io"
-        android:textSize="35dp"
+        android:text="@string/storytime_io"
+        android:textSize="35sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <EditText
@@ -39,10 +37,9 @@
         android:layout_marginTop="349dp"
         android:drawableLeft="@drawable/ic_baseline_adb"
         android:ems="10"
-        android:hint="Username"
+        android:hint="@string/username2"
         android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text="Username" />
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/Password"
@@ -50,11 +47,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:drawableLeft="@drawable/ic_baseline_lock"
         android:layout_marginTop="432dp"
-        android:hint="Password"
+        android:drawableLeft="@drawable/ic_baseline_lock"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:hint="@string/password1"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/Password2"
@@ -63,10 +61,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="512dp"
-        android:hint="Re-enter Password"
         android:drawableLeft="@drawable/ic_baseline_lock"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:hint="@string/re_enter_password"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
 
     <Switch
         android:id="@+id/switch1"
@@ -75,7 +74,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="574dp"
-        android:text="Admin" />
+        android:text="@string/admin" />
 
     <Button
         android:id="@+id/button2"
@@ -84,7 +83,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="606dp"
-        android:text="Sign Up" />
+        android:text="@string/sign_up" />
 
 
 </RelativeLayout>
